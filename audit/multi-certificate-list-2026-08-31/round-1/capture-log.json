@@ -1,0 +1,50 @@
+{
+  "baseURL": "http://127.0.0.1:4174/",
+  "captures": [
+    {
+      "device": "iphone",
+      "state": "certificate-list",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/multi-certificate-list-2026-08-31/round-1/iphone-certificate-list.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "iphone",
+      "state": "certificate-detail-second",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/multi-certificate-list-2026-08-31/round-1/iphone-certificate-detail-second.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "certificate-list",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/multi-certificate-list-2026-08-31/round-1/pixel-10-certificate-list.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "certificate-detail-second",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/multi-certificate-list-2026-08-31/round-1/pixel-10-certificate-detail-second.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    }
+  ],
+  "consoleErrors": []
+}

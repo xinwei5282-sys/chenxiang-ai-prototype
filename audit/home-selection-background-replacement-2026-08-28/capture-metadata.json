@@ -1,0 +1,42 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 1200
+  },
+  "deviceScaleFactor": 1,
+  "screenCssSize": {
+    "width": 393,
+    "height": 852
+  },
+  "cardSources": [
+    {
+      "src": "/assets/home-selection/bracelet-background-v2.png",
+      "naturalWidth": 780,
+      "naturalHeight": 418,
+      "renderedWidth": 166.5,
+      "renderedHeight": 100.265625
+    },
+    {
+      "src": "/assets/home-selection/gift-background-v2.png",
+      "naturalWidth": 1624,
+      "naturalHeight": 969,
+      "renderedWidth": 166.5,
+      "renderedHeight": 100.265625
+    },
+    {
+      "src": "/assets/home-selection/custom-background-v2.png",
+      "naturalWidth": 1610,
+      "naturalHeight": 977,
+      "renderedWidth": 166.5,
+      "renderedHeight": 100.265625
+    },
+    {
+      "src": "/assets/home-selection/tree-background-v2.png",
+      "naturalWidth": 1614,
+      "naturalHeight": 975,
+      "renderedWidth": 166.5,
+      "renderedHeight": 100.265625
+    }
+  ],
+  "consoleErrors": []
+}

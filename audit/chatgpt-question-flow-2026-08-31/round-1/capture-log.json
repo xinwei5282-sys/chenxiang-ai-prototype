@@ -1,0 +1,72 @@
+{
+  "baseURL": "http://127.0.0.1:4174/",
+  "captureLog": [
+    {
+      "device": "iphone",
+      "state": "initial",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/iphone-initial.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "iphone",
+      "state": "follow-up",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/iphone-follow-up.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "iphone",
+      "state": "answer",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/iphone-answer.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "initial",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/pixel-10-initial.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "follow-up",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/pixel-10-follow-up.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "answer",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/chatgpt-question-flow-2026-08-31/round-1/pixel-10-answer.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    }
+  ],
+  "consoleErrors": []
+}

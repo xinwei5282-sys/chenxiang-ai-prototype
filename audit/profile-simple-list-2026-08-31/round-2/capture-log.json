@@ -1,0 +1,184 @@
+{
+  "baseURL": "http://127.0.0.1:4174/",
+  "captureLog": [
+    {
+      "device": "iphone",
+      "state": "signed-out",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/profile-simple-list-2026-08-31/round-2/iphone-profile-signed-out.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      },
+      "layout": {
+        "account": {
+          "left": 527.9088745117188,
+          "right": 920.9088134765625,
+          "top": 174,
+          "bottom": 446,
+          "width": 392.99993896484375,
+          "height": 272
+        },
+        "list": {
+          "left": 545.9088745117188,
+          "right": 902.9088134765625,
+          "top": 466,
+          "bottom": 767,
+          "width": 356.99993896484375,
+          "height": 301
+        },
+        "tabs": {
+          "left": 527.9088745117188,
+          "right": 920.9088134765625,
+          "top": 924,
+          "bottom": 1026,
+          "width": 392.99993896484375,
+          "height": 102
+        },
+        "rows": [
+          {
+            "label": "问帖记录",
+            "left": 545.9088745117188,
+            "right": 902.9088134765625,
+            "top": 466,
+            "bottom": 538,
+            "width": 356.99993896484375,
+            "height": 72
+          },
+          {
+            "label": "本串证书",
+            "left": 545.9088745117188,
+            "right": 902.9088134765625,
+            "top": 538,
+            "bottom": 610,
+            "width": 356.99993896484375,
+            "height": 72
+          },
+          {
+            "label": "芯片识别说明",
+            "left": 545.9088745117188,
+            "right": 902.9088134765625,
+            "top": 634,
+            "bottom": 700,
+            "width": 356.99993896484375,
+            "height": 66
+          },
+          {
+            "label": "关于传统文化解读",
+            "left": 545.9088745117188,
+            "right": 902.9088134765625,
+            "top": 700,
+            "bottom": 766,
+            "width": 356.99993896484375,
+            "height": 66
+          }
+        ]
+      }
+    },
+    {
+      "device": "iphone",
+      "state": "signed-in",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/profile-simple-list-2026-08-31/round-2/iphone-profile-signed-in.png",
+      "box": {
+        "x": 523.5,
+        "y": 174,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "signed-out",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/profile-simple-list-2026-08-31/round-2/pixel-10-profile-signed-out.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      },
+      "layout": {
+        "account": {
+          "left": 511.4596862792969,
+          "right": 938.459716796875,
+          "top": 124,
+          "bottom": 406,
+          "width": 427.0000305175781,
+          "height": 282
+        },
+        "list": {
+          "left": 529.4596557617188,
+          "right": 920.459716796875,
+          "top": 426,
+          "bottom": 727,
+          "width": 391.00006103515625,
+          "height": 301
+        },
+        "tabs": {
+          "left": 511.4596862792969,
+          "right": 938.459716796875,
+          "top": 960,
+          "bottom": 1028,
+          "width": 427.0000305175781,
+          "height": 68
+        },
+        "rows": [
+          {
+            "label": "问帖记录",
+            "left": 529.4596557617188,
+            "right": 920.459716796875,
+            "top": 426,
+            "bottom": 498,
+            "width": 391.00006103515625,
+            "height": 72
+          },
+          {
+            "label": "本串证书",
+            "left": 529.4596557617188,
+            "right": 920.459716796875,
+            "top": 498,
+            "bottom": 570,
+            "width": 391.00006103515625,
+            "height": 72
+          },
+          {
+            "label": "芯片识别说明",
+            "left": 529.4596557617188,
+            "right": 920.459716796875,
+            "top": 594,
+            "bottom": 660,
+            "width": 391.00006103515625,
+            "height": 66
+          },
+          {
+            "label": "关于传统文化解读",
+            "left": 529.4596557617188,
+            "right": 920.459716796875,
+            "top": 660,
+            "bottom": 726,
+            "width": 391.00006103515625,
+            "height": 66
+          }
+        ]
+      }
+    },
+    {
+      "device": "pixel-10",
+      "state": "signed-in",
+      "path": "/Users/xinwei/weiran-env/projects/chenxiang-ai/prototype/audit/profile-simple-list-2026-08-31/round-2/pixel-10-profile-signed-in.png",
+      "box": {
+        "x": 507,
+        "y": 124,
+        "width": 427,
+        "height": 952
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "interactions": [
+    "authorization",
+    "certificate",
+    "chip help",
+    "culture help"
+  ]
+}
