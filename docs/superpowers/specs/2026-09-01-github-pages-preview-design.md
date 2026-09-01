@@ -1,7 +1,7 @@
 # GitHub Pages 在线预览设计
 
-日期：2026-09-01  
-状态：待实施  
+日期：2026-09-01
+状态：待实施
 仓库：`xinwei5282-sys/chenxiang-ai-prototype`
 
 ## 1. 目标
