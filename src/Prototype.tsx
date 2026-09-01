@@ -22,11 +22,12 @@ import { BottomSheet, Carousel, FlowStack, KeyboardTextarea, MobileScroll, useKe
 const product = "/assets/product/agarwood-bracelet-hero.png";
 const officialLogo = "/assets/product/guangken-logo.png";
 
-type CertificateRecord = { key: string; name: string; number: string; image: string; spec: string; origin: string; scent: string; timeline: readonly [string, string, string][] };
+type CertificateAppraisal = { image: string; sampleName: string; certificateNumber: string; weight: string; conclusion: string; taxonomy: string; note: string; inspection: string; standard: string; queryCode: string };
+type CertificateRecord = { key: string; name: string; image: string; spec: string; certificate?: CertificateAppraisal };
 const certificateRecords: readonly CertificateRecord[] = [
-  { key: "cx-2018-072", name: "海南琼南沉香手串", number: "CX-2018-072", image: "/assets/customer-feedback/collection-bracelet-thumbnail.png", spec: "18mm · 16颗", origin: "海南琼南产区", scent: "清甜木香 / 熟韵稳定", timeline: [["原料批次", "2018.06", "海南琼南产区 · 批次 QN-18"], ["制作节点", "2018.08", "手工穿制 · 传统工艺"], ["质检节点", "2018.09", "香气与材质检测通过"], ["芯片绑定", "2024.03", "身份芯片已绑定"]] },
-  { key: "cx-2024-116", name: "琼南蜜韵沉香手串", number: "CX-2024-116", image: "/assets/product/agarwood-bracelet-hero.png", spec: "16mm · 18颗", origin: "海南琼南产区", scent: "蜜甜果香 / 温润悠长", timeline: [["原料批次", "2024.02", "海南琼南产区 · 批次 QN-24"], ["制作节点", "2024.05", "手工穿制 · 传统工艺"], ["质检节点", "2024.06", "香气与材质检测通过"], ["芯片绑定", "2024.07", "身份芯片已绑定"]] },
-  { key: "cx-2025-031", name: "岭南雅韵沉香手串", number: "CX-2025-031", image: "/assets/home-selection/bracelet-background-v2.png", spec: "14mm · 20颗", origin: "岭南产区", scent: "清雅木香 / 细腻平衡", timeline: [["原料批次", "2025.01", "岭南产区 · 批次 LN-25"], ["制作节点", "2025.03", "手工穿制 · 传统工艺"], ["质检节点", "2025.04", "香气与材质检测通过"], ["芯片绑定", "2025.05", "身份芯片已绑定"]] },
+  { key: "cx-2018-072", name: "奇楠沉香算盘珠手串", image: "/assets/customer-feedback/collection-bracelet-thumbnail.png", spec: "18mm · 16颗", certificate: { image: "/assets/certificates/material-appraisal-certificate-zhtc26063030124.jpg", sampleName: "奇楠沉香算盘珠手串", certificateNumber: "ZHTC26063030124", weight: "4.3g+", conclusion: "符合奇楠沉香构造特征", taxonomy: "瑞香科沉香属", note: "无", inspection: "横切面构造", standard: "T/DBCX010-2025", queryCode: "1706" } },
+  { key: "cx-2024-116", name: "琼南蜜韵沉香手串", image: "/assets/product/agarwood-bracelet-hero.png", spec: "16mm · 18颗" },
+  { key: "cx-2025-031", name: "岭南雅韵沉香手串", image: "/assets/home-selection/bracelet-background-v2.png", spec: "14mm · 20颗" },
 ];
 
 const productDocPages = {
@@ -61,7 +62,7 @@ const productDocPages = {
     apiHeadings: ["`GET /v1/conversations/{conversation_id}`", "`POST /v1/conversations/{conversation_id}/messages`", "`DELETE /v1/conversations/{conversation_id}`"], acceptancePrefixes: ["AC-HISTORY-", "AC-AI-"],
   },
   certificate: {
-    label: "P-07 证书与溯源", guideHeading: "DOC-P-07 证书与溯源", specHeading: "P-07 证书与溯源",
+    label: "P-07 证书详情", guideHeading: "DOC-P-07 证书详情", specHeading: "P-07 证书详情",
     flowHeadings: ["FLOW-01 芯片识别到首页"], stateHeadings: [], requirementPrefixes: ["FR-ID-", "FR-CONTENT-"],
     apiHeadings: ["`GET /v1/bracelets/{bracelet_id}`", "`GET /v1/certificates/{certificate_id}`"], acceptancePrefixes: ["AC-ID-", "AC-AUTH-", "AC-CONTENT-"],
   },
@@ -137,7 +138,7 @@ const pagePrdDefaults: Record<ProductDocPageKey, PagePrd> = {
 function CurrentPagePrd({ pageKey }: { pageKey: ProductDocPageKey }) {
   const resolvedPageKey = pagePrdDefaults[pageKey] ? pageKey : "home";
   const config = productDocPages[resolvedPageKey];
-  const data = pagePrdDefaults[resolvedPageKey];
+  const data = resolvedPageKey === "certificate" ? { ...pagePrdDefaults[resolvedPageKey], goal: "展示证书原件与结构化检验字段，并按手串独立绑定。", entry: "首页证书查询；我的→我的手串", rules: ["仅展示证书原件和结构化字段，不建设溯源记录。", "多手串按独立证书对象绑定，缺少原件显示待补充。"], fields: [["证书原件", "图片", "有原件展示", "支持适应宽度与 2× 查看"], ["结构化检验字段", "字段列表", "有原件展示", "展示样品名称、编号、重量、结论、科属、备注、检查、标准、查询码"]] as [string,string,string,string][], actions: [["查看证书原件", "原件已收录", "打开手机内查看层", "点击切换适应宽度与 2×"], ["返回", "始终展示", "返回来源页", "保留来源上下文"]] as [string,string,string,string][], boundary: "本期不建设溯源记录、查询接口、复制动作或二维码生成。", states: "详情→原件查看/图片失败；多手串→完整证书或原件待补充。", empty: "图片加载失败显示证书原件暂时无法加载，字段仍可阅读。", acceptance: ["证书原件完整可查看。", "无原件手串不复用其他手串证书。"], tech: ["证书对象必须归属对应 bracelet_id。"] } : pagePrdDefaults[resolvedPageKey];
   const flows = data.states.split("；").map(flow => flow.trim()).filter(Boolean);
   return <article className="product-doc-review-article product-doc-review-page-guide current-page-prd">
     <div className="current-page-prd-meta"><span className="status">需求已整理</span><span>页面键：{resolvedPageKey}</span><span>路由：{resolvedPageKey}</span><span>更新：2026-08-31</span></div>
@@ -472,7 +473,7 @@ function Home({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof useKe
         </section>
         <CollectionShowcase flow={flow} keyboard={keyboard} onToast={toast.show} />
         <section className="service-section home-feature-card" data-home-section="home-services" aria-label="手串服务">
-          <HomeServiceLink icon={<FileCheck />} title="证书与溯源" testId="home-certificate-link" ariaLabel="查看证书与溯源" onClick={openProvenance} />
+  <HomeServiceLink icon={<FileCheck />} title="证书查询" testId="home-certificate-link" ariaLabel="查看证书查询" onClick={openProvenance} />
           <HomeServiceLink icon={<Link2Icon />} title="佩戴养护" onClick={() => { prepareH5Transition(keyboard); flow.push(careScreen(keyboard)); }} />
           <HomeServiceLink icon={<BookOpen />} title="沉香知识" onClick={() => { prepareH5Transition(keyboard); flow.push(knowledgeScreen(keyboard)); }} />
           <HomeServiceLink icon={<Sprout />} title="认种沉香树" onClick={() => { prepareH5Transition(keyboard); flow.push(adoptionArchiveScreen(keyboard)); }} />
@@ -653,13 +654,21 @@ const adoptionArchiveScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowSc
 });
 const certificateListScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
   id: "certificate-list", header: flow => <TopBar title="我的手串" back={flow.pop} keyboard={keyboard} />, headerHeight: 54,
-  render: flow => <MobileScroll className="app-screen"><main className="screen-content detail-content certificate-list" data-product-doc-page="certificate-list"><div className="certificate-list-rows">{certificateRecords.map(record => <button className="certificate-list-row" key={record.key} onClick={() => { prepareH5Transition(keyboard); flow.push(certificateScreen(keyboard, record)); }}><img src={record.image} alt="" /><span><strong>{record.name}</strong><small>{record.number} · {record.spec} · 已绑定</small></span><ChevronRightIcon /></button>)}</div></main></MobileScroll>
+  render: flow => <MobileScroll className="app-screen"><main className="screen-content detail-content certificate-list" data-product-doc-page="certificate-list"><div className="certificate-list-rows">{certificateRecords.map(record => <button className="certificate-list-row" key={record.key} onClick={() => { prepareH5Transition(keyboard); flow.push(certificateScreen(keyboard, record)); }}><img src={record.image} alt="" /><span><strong>{record.name}</strong><small>{record.certificate ? `${record.certificate.certificateNumber} · ${record.certificate.weight} · 原件已收录` : `${record.spec} · 原件待补充`}</small></span><ChevronRightIcon /></button>)}</div></main></MobileScroll>
 });
+function CertificateDetail({ record }: { record: CertificateRecord }) {
+  const [viewerOpen, setViewerOpen] = useState(false); const [zoomed, setZoomed] = useState(false); const [imageFailed, setImageFailed] = useState(false);
+  useEffect(() => { if (!viewerOpen) return; const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setViewerOpen(false); }; window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [viewerOpen]);
+  const cert = record.certificate;
+  if (!cert) return <MobileScroll className="app-screen"><main className="screen-content detail-content material-certificate-detail" data-product-doc-page="certificate"><p className="page-eyebrow">{record.name} · {record.spec}</p><div className="certificate-empty"><strong>证书原件待补充</strong><p>该手串暂未收录材质检验证原件。</p></div></main></MobileScroll>;
+  const fields = [["样品名称", cert.sampleName], ["证书编号", cert.certificateNumber], ["样品重量", cert.weight], ["检验结论", cert.conclusion], ["科属名称", cert.taxonomy], ["备注", cert.note], ["放大检查", cert.inspection], ["执行标准", cert.standard], ["查询码", cert.queryCode]];
+  return <MobileScroll className="app-screen"><main className="screen-content detail-content material-certificate-detail" data-product-doc-page="certificate"><p className="page-eyebrow">证书原件已收录</p><h2>{cert.sampleName}</h2><p className="certificate-number">{cert.certificateNumber}</p><div className="certificate-original">{imageFailed ? <div className="certificate-image-fallback">证书原件暂时无法加载</div> : <button type="button" aria-label="查看证书原件" onClick={() => { setViewerOpen(true); setZoomed(false); }}><img src={cert.image} alt="材质检验证证书原件" onError={() => setImageFailed(true)} /></button>}</div><dl className="certificate-fields">{fields.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{viewerOpen && <div className="certificate-viewer" role="dialog" aria-modal="true" aria-label="证书原件查看"><button type="button" className="certificate-viewer-close" aria-label="关闭证书原件" onClick={() => setViewerOpen(false)}>关闭</button><button type="button" className={`certificate-viewer-image${zoomed ? " is-zoomed" : ""}`} aria-label={zoomed ? "还原证书原件" : "放大证书原件"} data-zoomed={zoomed} onClick={() => setZoomed(value => !value)}><img src={cert.image} alt="材质检验证证书原件" /></button></div>}</main></MobileScroll>;
+}
 const certificateScreen = (keyboard: ReturnType<typeof useKeyboard>, record: CertificateRecord = certificateRecords[0]): FlowScreen => ({
   id: "certificate",
-  header: flow => <TopBar title="证书与溯源" back={flow.pop} keyboard={keyboard} />,
+  header: flow => <TopBar title="证书详情" back={flow.pop} keyboard={keyboard} />,
   headerHeight: 54,
-  render: () => <MobileScroll className="app-screen"><main className="screen-content detail-content" data-product-doc-page="certificate"><p className="page-eyebrow">本串数字身份</p><h2>{record.name}<br /><em>都有迹可循。</em></h2><div className="certificate"><div className="cert-top"><span>沉香数字身份凭证</span><span>{record.number}</span></div><CheckIcon /><strong>已核验 · 真实身份</strong><p>{record.origin}<br />{record.scent}</p></div><div className="timeline">{record.timeline.map(([a, b, c]) => <div className="timeline-item" key={a}><span className="timeline-dot" /><div><small>{b}</small><strong>{a}</strong><p>{c}</p></div></div>)}</div></main></MobileScroll>,
+  render: () => <CertificateDetail record={record} />,
 });
 const farmStoryScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
   id: "farm-story",

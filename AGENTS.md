@@ -1,5 +1,9 @@
 # Mobile Prototype Agent Guide
 
+## Certificate detail fidelity note (2026-09-01)
+
+P-07 is certificate-only for this phase: use the supplied original and structured appraisal fields, exclude provenance records, and show an explicit missing-original state for unbound bracelets without cross-bracelet reuse.
+
 ## Page PRD fidelity note (2026-08-31)
 
 The browser-level page PRD must faithfully match the supplied 杭小消/消保委 review component, not the older top toolbar or Markdown-excerpt drawer. Its entry is the fixed 44×92 vertical `页面 / PRD` tab at the middle-right edge. Opening it shows a blocking page mask and a 720px full-height right drawer with a page-specific title, scrollable field-level body, and fixed footer; it closes from the header, footer, mask, or Esc and then returns focus to the entry. Each mapped page needs its own `页面名 · 页面 PRD` title, status/key/route/update metadata, page overview, page-level business rules, field table, action/result table, product boundary, state/navigation flow, notifications/logging, exceptions/empty states, acceptance criteria, and technical assessment items. Do not restore the top-right horizontal `产品文档` button, the `当前页面 / 完整 PRD` switch, or the former Markdown excerpt sections unless a later explicit decision overrides this note.
