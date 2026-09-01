@@ -96,8 +96,78 @@ test("selection showcase uses a two-column illustrated catalog and remains a mal
 });
 
 test("certificate service keeps its visible title", async ({ page }) => {
-  const certificate = page.locator('[data-home-section="home-services"]').getByRole("button", { name: "查看证书与溯源" });
-  await expect(certificate.locator("strong")).toHaveText("证书与溯源");
+  const certificate = page.locator('[data-home-section="home-services"]').getByRole("button", { name: "查看证书查询" });
+  await expect(certificate.locator("strong")).toHaveText("证书查询");
+});
+
+test("material certificate shows the supplied original and structured fields without provenance", async ({ page }) => {
+  await page.getByRole("button", { name: "查看证书查询" }).click();
+
+  await expect(page.getByRole("heading", { name: "证书详情", exact: true })).toBeVisible();
+  const detail = page.locator(".material-certificate-detail");
+  await expect(detail.getByRole("heading", { name: "奇楠沉香算盘珠手串", exact: true })).toBeVisible();
+  await expect(detail.getByText("证书原件已收录", { exact: true })).toBeVisible();
+  await expect(detail.getByRole("img", { name: "材质检验证证书原件" })).toHaveAttribute("src", "/assets/certificates/material-appraisal-certificate-zhtc26063030124.jpg");
+
+  for (const value of [
+    "ZHTC26063030124",
+    "4.3g+",
+    "符合奇楠沉香构造特征",
+    "瑞香科沉香属",
+    "无",
+    "横切面构造",
+    "T/DBCX010-2025",
+    "1706",
+  ]) {
+    await expect(detail.locator("dd").filter({ hasText: value })).toHaveCount(1);
+  }
+
+  await expect(detail.locator(".timeline")).toHaveCount(0);
+  await expect(detail.getByText("产地", { exact: true })).toHaveCount(0);
+  await expect(detail.getByText("香韵", { exact: true })).toHaveCount(0);
+});
+
+test("certificate original opens a contained zoom viewer", async ({ page }) => {
+  await page.getByRole("button", { name: "查看证书查询" }).click();
+  await page.getByRole("button", { name: "查看证书原件" }).click();
+
+  const screen = page.getByTestId("device-screen");
+  const viewer = page.getByRole("dialog", { name: "证书原件查看" });
+  await expect(viewer).toBeVisible();
+  const [screenBox, viewerBox] = await Promise.all([screen.boundingBox(), viewer.boundingBox()]);
+  expect(screenBox).not.toBeNull();
+  expect(viewerBox).not.toBeNull();
+  expect(Math.abs(viewerBox!.x - screenBox!.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(viewerBox!.y - screenBox!.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(viewerBox!.width - screenBox!.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(viewerBox!.height - screenBox!.height)).toBeLessThanOrEqual(1);
+  const closeBox = await viewer.getByRole("button", { name: "关闭证书原件" }).boundingBox();
+  expect(closeBox).not.toBeNull();
+  expect(closeBox!.y).toBeGreaterThanOrEqual(screenBox!.y + 54);
+  expect(closeBox!.x + closeBox!.width).toBeLessThanOrEqual(screenBox!.x + screenBox!.width - 12);
+
+  const imageButton = viewer.getByRole("button", { name: "放大证书原件" });
+  await expect(imageButton).toHaveAttribute("data-zoomed", "false");
+  await imageButton.click();
+  await expect(viewer.getByRole("button", { name: "还原证书原件" })).toHaveAttribute("data-zoomed", "true");
+  await page.keyboard.press("Escape");
+  await expect(viewer).toHaveCount(0);
+
+  await page.getByRole("button", { name: "查看证书原件" }).click();
+  await page.getByRole("button", { name: "关闭证书原件" }).click();
+  await expect(viewer).toHaveCount(0);
+});
+
+test("certificate asset failure keeps structured fields and shows an explicit fallback", async ({ page }) => {
+  await page.route("**/material-appraisal-certificate-zhtc26063030124.jpg", (route) => route.abort());
+  await page.reload();
+  await page.getByRole("button", { name: "查看证书查询" }).click();
+
+  const detail = page.locator(".material-certificate-detail");
+  await expect(detail.getByText("证书原件暂时无法加载", { exact: true })).toBeVisible();
+  await expect(detail.getByRole("img", { name: "材质检验证证书原件" })).toHaveCount(0);
+  await expect(detail.locator("dd").filter({ hasText: "ZHTC26063030124" })).toHaveCount(1);
+  await expect(detail.locator("dd").filter({ hasText: "符合奇楠沉香构造特征" })).toHaveCount(1);
 });
 
 test("the four homepage service buttons share one row", async ({ page }) => {
@@ -714,15 +784,26 @@ test("profile certificate and chip-help rows open their intended pages", async (
   await expect(certificateList.locator(".page-eyebrow")).toHaveCount(0);
   await expect(certificateList.locator("h2")).toHaveCount(0);
   await expect(certificateList.locator(".certificate-list-intro")).toHaveCount(0);
-  const braceletRows = page.getByRole("button", { name: /CX-20/ });
+  const braceletRows = certificateList.locator(".certificate-list-row");
   await expect(braceletRows).toHaveCount(3);
-  for (const label of ["海南琼南沉香手串", "琼南蜜韵沉香手串", "岭南雅韵沉香手串"]) await expect(page.getByRole("button", { name: new RegExp(label) })).toBeVisible();
-  await page.getByRole("button", { name: /琼南蜜韵沉香手串.*CX-2024-116/ }).click();
-  await expect(page.getByRole("heading", { name: "证书与溯源", exact: true })).toBeVisible();
+  await expect(braceletRows.nth(0)).toContainText("ZHTC26063030124");
+  await expect(braceletRows.nth(0)).toContainText("原件已收录");
+  await expect(braceletRows.nth(1)).toContainText("原件待补充");
+  await expect(braceletRows.nth(2)).toContainText("原件待补充");
+  for (const label of ["奇楠沉香算盘珠手串", "琼南蜜韵沉香手串", "岭南雅韵沉香手串"]) await expect(page.getByRole("button", { name: new RegExp(label) })).toBeVisible();
+  await page.getByRole("button", { name: /琼南蜜韵沉香手串.*原件待补充/ }).click();
+  await expect(page.getByRole("heading", { name: "证书详情", exact: true })).toBeVisible();
   await expect(page.getByText("琼南蜜韵沉香手串", { exact: true })).toBeVisible();
-  await expect(page.getByText("CX-2024-116", { exact: true })).toBeVisible();
+  await expect(page.getByText("证书原件待补充", { exact: true })).toBeVisible();
+  await expect(page.getByText("ZHTC26063030124", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("证书原件已收录", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "材质检验证证书原件" })).toHaveCount(0);
   await page.getByRole("button", { name: "返回" }).click();
   await expect(page.getByRole("heading", { name: "我的手串", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /岭南雅韵沉香手串.*原件待补充/ }).click();
+  await expect(page.getByText("证书原件待补充", { exact: true })).toBeVisible();
+  await expect(page.getByText("ZHTC26063030124", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "返回" }).click();
   await page.getByRole("button", { name: "返回" }).click();
   await page.waitForTimeout(250);
   await current.getByRole("button", { name: "芯片识别说明" }).click();
@@ -867,7 +948,7 @@ test("certificate navigation keeps the simulated keyboard hidden below the phone
     return element.scrollTop;
   });
   expect(seededScrollTop).toBe(0);
-  await page.getByRole("button", { name: "查看证书与溯源" }).click();
+  await page.getByRole("button", { name: "查看证书查询" }).click();
   await expect(page.getByTestId("keyboard-dock")).toHaveAttribute("data-visible", "false");
   await expect(page.getByRole("button", { name: "返回" })).toBeFocused();
 
@@ -1072,10 +1153,16 @@ test("product document follows the active page and gives the login layer precede
   const trigger = page.locator(".product-doc-review-trigger");
   const drawer = page.locator(".product-doc-review-drawer");
 
-  await page.getByRole("button", { name: "查看证书与溯源" }).click();
-  await expect(trigger).toHaveAttribute("aria-label", "查看证书与溯源 · 页面 PRD");
+  await page.getByRole("button", { name: "查看证书查询" }).click();
+  await expect(trigger).toHaveAttribute("aria-label", "查看证书详情 · 页面 PRD");
   await trigger.click();
-  await expect(drawer.getByRole("heading", { name: "证书与溯源 · 页面 PRD", exact: true })).toBeVisible();
+  await expect(drawer.getByRole("heading", { name: "证书详情 · 页面 PRD", exact: true })).toBeVisible();
+  await expect(drawer.getByText("证书原件", { exact: true }).first()).toBeVisible();
+  await expect(drawer.getByText(/原件待补充/).first()).toBeVisible();
+  await expect(drawer.getByText(/多手串/).first()).toBeVisible();
+  await expect(drawer.getByText("溯源时间线", { exact: true })).toHaveCount(0);
+  await expect(drawer.getByText("产地", { exact: true })).toHaveCount(0);
+  await expect(drawer.getByText("香韵", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "关闭 PRD", exact: true }).first().click();
   await page.getByRole("button", { name: "返回" }).click();
 
