@@ -15,7 +15,7 @@
 **Create**
 
 - `scripts/prepare-github-pages.mjs`: transform and validate only the generated Pages artifact.
-- `tests/github-pages-build.test.mjs`: unit and fixture-level coverage for rewriting, idempotence, and artifact validation; contract coverage for the npm command and workflow.
+- `tests/github-pages-build.test.mjs`: unit and fixture-level coverage for rewriting, idempotence, and artifact validation.
 - `.github/workflows/deploy-pages.yml`: build and deploy the public Pages artifact from `main`.
 
 **Modify**
@@ -49,7 +49,7 @@ import {
   rewriteAssetRoots,
 } from "../scripts/prepare-github-pages.mjs";
 
-test("rewrites only root asset URLs and is idempotent", () => {
+test("rewrites only root asset URLs", () => {
   const input = [
     'src="/assets/logo.png"',
     "url(/assets/frame.png)",
@@ -57,16 +57,18 @@ test("rewrites only root asset URLs and is idempotent", () => {
     'src="https://cdn.example.com/assets/remote.png"',
   ].join("\n");
   const once = rewriteAssetRoots(input);
-  const twice = rewriteAssetRoots(once);
-
   assert.equal(PAGES_BASE, "/chenxiang-ai-prototype");
   assert.match(once, /\/chenxiang-ai-prototype\/assets\/logo\.png/);
   assert.match(once, /\/chenxiang-ai-prototype\/assets\/frame\.png/);
   assert.match(once, /https:\/\/cdn\.example\.com\/assets\/remote\.png/);
-  assert.equal(twice, once);
 });
 
-test("prepares a fixture artifact and rejects missing inputs", async () => {
+test("keeps prepared asset URLs unchanged", () => {
+  const prepared = 'src="/chenxiang-ai-prototype/assets/ready.png"';
+  assert.equal(rewriteAssetRoots(prepared), prepared);
+});
+
+test("prepares a fixture artifact", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "chenxiang-pages-"));
   const distDir = path.join(root, "client");
   try {
@@ -77,8 +79,16 @@ test("prepares a fixture artifact and rejects missing inputs", async () => {
     const result = await prepareGitHubPages({ distDir });
     assert.equal(result.rewrittenFiles, 2);
     assert.doesNotMatch(await readFile(path.join(distDir, "index.html"), "utf8"), /src="\/assets\//);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects an artifact with missing inputs", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "chenxiang-pages-missing-"));
+  try {
     await assert.rejects(
-      prepareGitHubPages({ distDir: path.join(root, "missing") }),
+      prepareGitHubPages({ distDir: path.join(root, "client") }),
       /Missing GitHub Pages build input/,
     );
   } finally {
@@ -159,7 +169,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 
 Run: `node --test tests/github-pages-build.test.mjs`
 
-Expected: PASS, 2 tests.
+Expected: PASS, 4 tests.
 
 - [ ] **Step 5: Commit the transformer**
 
@@ -171,53 +181,32 @@ git commit -m "test: cover GitHub Pages artifact preparation"
 ### Task 2: Pages build command and deployment workflow
 
 **Files:**
-- Modify: `tests/github-pages-build.test.mjs`
 - Modify: `package.json`
 - Create: `.github/workflows/deploy-pages.yml`
 
-- [ ] **Step 1: Add failing configuration contract tests**
+- [ ] **Step 1: Confirm the dedicated Pages command is absent**
 
-Append tests that load `package.json` and the workflow as text:
+Run: `npm run build:pages`
 
-```js
-test("defines a Pages build without changing the regular build", async () => {
-  const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
-  assert.equal(pkg.scripts.build, "tsc && vite build && node scripts/prepare-sites-build.mjs");
-  assert.equal(
-    pkg.scripts["build:pages"],
-    "npm run check:runtime && tsc && vite build --base=/chenxiang-ai-prototype/ && node scripts/prepare-github-pages.mjs",
-  );
-});
+Expected: FAIL with `Missing script: "build:pages"`. This is the red check for the observable build entry point; no source-text assertion is added.
 
-test("deploy workflow uses the official Pages actions and minimum permissions", async () => {
-  const workflow = await readFile(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
-  for (const required of [
-    "actions/checkout@v6",
-    "actions/setup-node@v6",
-    "actions/configure-pages@v5",
-    "actions/upload-pages-artifact@v4",
-    "actions/deploy-pages@v4",
-    "pages: write",
-    "id-token: write",
-    "npm run build:pages",
-    "path: dist/client",
-  ]) assert.match(workflow, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-});
-```
-
-- [ ] **Step 2: Run the tests and verify the contract fails**
-
-Run: `node --test tests/github-pages-build.test.mjs`
-
-Expected: FAIL because `build:pages` and `.github/workflows/deploy-pages.yml` do not yet exist.
-
-- [ ] **Step 3: Add the dedicated npm command**
+- [ ] **Step 2: Add the dedicated npm command**
 
 Add exactly this script to `package.json` without changing the existing `build` script:
 
 ```json
 "build:pages": "npm run check:runtime && tsc && vite build --base=/chenxiang-ai-prototype/ && node scripts/prepare-github-pages.mjs"
 ```
+
+- [ ] **Step 3: Run and inspect the real Pages build**
+
+Run: `npm run build:pages`
+
+Expected: PASS and log `Prepared GitHub Pages artifact: .../dist/client`.
+
+Run: `rg -n '(src|href)="/assets/|url\(["'"']?/assets/|["'"']/assets/' dist/client --glob '*.html' --glob '*.css' --glob '*.js'`
+
+Expected: no matches; `dist/client/index.html` references `/chenxiang-ai-prototype/assets/`. This validates the produced artifact rather than the `package.json` source text.
 
 - [ ] **Step 4: Add the official two-job Pages workflow**
 
@@ -253,10 +242,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Test Pages preparation
-        run: node --test tests/github-pages-build.test.mjs
       - name: Build Pages artifact
         run: npm run build:pages
+      - name: Test Pages preparation
+        run: node --test tests/github-pages-build.test.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
@@ -276,23 +265,13 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-- [ ] **Step 5: Run the focused contract tests**
+- [ ] **Step 5: Validate the workflow as configuration**
 
-Run: `node --test tests/github-pages-build.test.mjs`
+Run: `ruby -e 'require "yaml"; YAML.load_file(".github/workflows/deploy-pages.yml"); puts "workflow yaml valid"'`
 
-Expected: PASS, 4 tests.
+Expected: `workflow yaml valid`. The workflow's behavior is not unit-tested by grepping YAML; Task 4 validates it through a real GitHub Actions run and live Pages deployment.
 
-- [ ] **Step 6: Build the real Pages artifact and inspect root references**
-
-Run: `npm run build:pages`
-
-Expected: PASS and log `Prepared GitHub Pages artifact: .../dist/client`.
-
-Run: `rg -n '(src|href)="/assets/|url\(["'"']?/assets/|["'"']/assets/' dist/client --glob '*.html' --glob '*.css' --glob '*.js'`
-
-Expected: no matches; `dist/client/index.html` references `/chenxiang-ai-prototype/assets/`.
-
-- [ ] **Step 7: Commit the build and workflow**
+- [ ] **Step 6: Commit the build and workflow**
 
 ```bash
 git add package.json tests/github-pages-build.test.mjs .github/workflows/deploy-pages.yml
@@ -372,4 +351,3 @@ Expected: no JavaScript errors or asset 404 responses; the PRD drawer opens; all
 Save a full-page screenshot to `/private/tmp/chenxiang-github-pages-final.png` and inspect it visually.
 
 Expected: the deployed page matches the verified local prototype composition and contains no blank device screen or missing-image placeholders.
-
