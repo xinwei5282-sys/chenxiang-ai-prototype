@@ -287,150 +287,60 @@ test("adoption service hands off to an external mini program without an internal
   await expect(page.getByText("成长时间线", { exact: true })).toHaveCount(0);
 });
 
-test.skip("legacy tree collection behavior", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" }); await expect(collection.locator(".collection-card")).toHaveCount(2);
-  await expect(collection.locator(".collection-page-count")).toHaveCount(0);
-  await expect(collection.locator('.collection-card[data-active="true"]')).toHaveCount(1);
-  await collection.locator('.collection-card[data-active="true"]').getByRole("button", { name: "查看海南琼南沉香手串档案" }).click(); await expect(page.getByRole("heading", { name: "海南琼南沉香手串档案" })).toBeVisible();
-  await page.getByRole("button", { name: "返回" }).click(); await page.waitForTimeout(350);
-  const restored = page.getByRole("region", { name: "我的藏品" });
-  await restored.locator('.collection-card[data-active="true"]').getByRole("button", { name: "下一件藏品" }).click();
-  await restored.locator('.collection-card[data-active="true"]').getByRole("button", { name: "查看琼南一号认种沉香树档案" }).click(); await expect(page.getByRole("heading", { name: "琼南一号认种沉香树" })).toBeVisible();
-  const archive = page.getByTestId("flow-current").last();
-});
-
-test("collection reference card switches the active archive and keeps actions item-specific", async ({ page }) => {
+test("collection card keeps bracelet identity and actions item-specific", async ({ page }) => {
   const collection = page.getByRole("region", { name: "我的藏品" });
-  const active = () => collection.locator('.collection-card[data-active="true"]');
+  const card = collection.locator('.collection-card[data-active="true"]');
 
-  await expect(active()).toContainText("海南琼南沉香手串");
-  await expect(active()).toContainText("已认证");
-  await expect(active()).toContainText("档案编号");
-  await expect(active()).toContainText("CX-2018-072");
-  await expect(active().getByRole("img", { name: "海南琼南沉香手串" })).toHaveAttribute("src", "/assets/customer-feedback/collection-bracelet-thumbnail.png");
-  await expect(active().getByRole("link", { name: "导出海南琼南沉香手串电子证书" })).toBeVisible();
-  await expect(collection.locator('.collection-card:not([data-active="true"])')).toHaveAttribute("aria-hidden", "true");
-  await expect(collection.locator('.collection-card:not([data-active="true"])')).toHaveAttribute("inert", "");
+  await expect(card).toContainText("海南琼南沉香手串");
+  await expect(card).toContainText("已认证");
+  await expect(card).toContainText("档案编号");
+  await expect(card).toContainText("CX-2018-072");
+  await expect(card.getByRole("img", { name: "海南琼南沉香手串" })).toHaveAttribute("src", "/assets/customer-feedback/collection-bracelet-thumbnail.png");
+  await expect(card.getByRole("link", { name: "导出海南琼南沉香手串电子证书" })).toBeVisible();
   await expect(collection.getByRole("link", { name: /导出.*电子证书/ })).toHaveCount(1);
-  await expect(collection.locator('.collection-pagination [aria-current="step"]')).toHaveAttribute("aria-label", "第 1 件：海南琼南沉香手串");
-
-  const next = active().getByRole("button", { name: "下一件藏品" });
-  const nextBox = await next.boundingBox();
-  expect(nextBox?.width).toBeGreaterThanOrEqual(44);
-  expect(nextBox?.height).toBeGreaterThanOrEqual(44);
-  await next.click();
-
-  await expect(active()).toContainText("琼南一号认种沉香树");
-  await expect(active()).toContainText("已建档");
-  await expect(active()).toContainText("认种编号");
-  await expect(active().getByRole("link", { name: "导出琼南一号认种沉香树电子证书" })).toBeVisible();
-  await expect(collection.locator('.collection-pagination [aria-current="step"]')).toHaveAttribute("aria-label", "第 2 件：琼南一号认种沉香树");
-
-  await active().getByRole("button", { name: "查看琼南一号认种沉香树档案" }).click();
-  await expect(page.getByRole("heading", { name: "琼南一号认种沉香树" })).toBeVisible();
+  await expect(collection.getByRole("button", { name: "查看海南琼南沉香手串档案" })).toBeVisible();
 });
 
-test("collection reference cards fit the carousel and cycle with synchronized pagination", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  const carousel = collection.locator(".collection-carousel");
-  const cards = collection.locator(".collection-card");
-  const geometry = await carousel.evaluate(node => {
-    const viewport = node.getBoundingClientRect();
-    const items = [...node.querySelectorAll<HTMLElement>(".collection-card")].map(item => item.getBoundingClientRect());
-    return { viewport: viewport.width, widths: items.map(item => item.width), lefts: items.map(item => item.left - viewport.left), scrollWidth: (node as HTMLElement).scrollWidth };
-  });
-  expect(geometry.widths[0]).toBeCloseTo(geometry.viewport, 0);
-  expect(geometry.widths[1]).toBeCloseTo(geometry.viewport, 0);
-  expect(geometry.lefts[1]).toBeCloseTo(geometry.viewport, 0);
-  expect(geometry.scrollWidth).toBeGreaterThanOrEqual(geometry.viewport * 2);
-  const clippedMetadata = await cards.nth(0).locator(".collection-card-copy dd").evaluateAll(items => items
-    .map(item => ({ text: item.textContent, clientWidth: item.clientWidth, scrollWidth: item.scrollWidth }))
-    .filter(item => item.scrollWidth > item.clientWidth + 1));
-  expect(clippedMetadata).toEqual([]);
-  await expect(cards.nth(0).locator(".collection-pagination")).toBeVisible();
-  await expect(cards.nth(1).locator(".collection-pagination")).toBeVisible();
-  await expect(cards.nth(0).locator('[aria-current="step"]')).toHaveCount(1);
-  await expect(cards.nth(1).locator('[aria-current="step"]')).toHaveCount(0);
-  for (const card of [cards.nth(0), cards.nth(1)]) {
-    for (const label of ["上一件藏品", "下一件藏品"]) {
-      const box = await card.locator(`button[aria-label="${label}"]`).boundingBox();
-      expect(box?.width).toBeGreaterThanOrEqual(44); expect(box?.height).toBeGreaterThanOrEqual(44);
-    }
-  }
-  await cards.nth(0).getByRole("button", { name: "下一件藏品" }).click();
-  await expect(cards.nth(1)).toHaveAttribute("data-active", "true");
-  await expect(cards.nth(1).locator('[aria-current="step"]')).toHaveCount(1);
-  await collection.locator('.collection-card[data-active="true"]').getByRole("button", { name: "下一件藏品" }).click();
-  await expect(cards.nth(0)).toHaveAttribute("data-active", "true");
-  await collection.locator('.collection-card[data-active="true"]').getByRole("button", { name: "上一件藏品" }).click();
-  await expect(cards.nth(1)).toHaveAttribute("data-active", "true");
-  await carousel.evaluate(node => (node as HTMLElement).scrollTo({ left: (node as HTMLElement).clientWidth, behavior: "auto" }));
-  await expect(cards.nth(1)).toHaveAttribute("data-active", "true");
-});
-
-test("collection card separates product imagery from readable metadata on both devices", async ({ page }) => {
+test("single bracelet collection card fits without horizontal overflow on iPhone and Pixel", async ({ page }) => {
   for (const device of ["iphone", "pixel-10"] as const) {
     await page.getByTestId("device-picker").click();
     await page.getByTestId(`device-option-${device}`).click();
-    const active = page.getByRole("region", { name: "我的藏品" }).locator('.collection-card[data-active="true"]');
-    const spacing = await active.evaluate(card => {
-      const image = card.querySelector<HTMLElement>(".collection-card-body > img")!.getBoundingClientRect();
-      const copy = card.querySelector<HTMLElement>(".collection-card-copy")!.getBoundingClientRect();
-      const metadata = [...card.querySelectorAll<HTMLElement>("dd")];
+    const card = page.getByRole("region", { name: "我的藏品" }).locator('.collection-card[data-active="true"]');
+    const layout = await card.evaluate(cardNode => {
+      const viewport = cardNode.closest<HTMLElement>(".collection-carousel")!;
+      const cardBox = cardNode.getBoundingClientRect();
+      const image = cardNode.querySelector<HTMLElement>(".collection-card-body > img")!.getBoundingClientRect();
+      const copy = cardNode.querySelector<HTMLElement>(".collection-card-copy")!.getBoundingClientRect();
+      const metadata = [...cardNode.querySelectorAll<HTMLElement>("dd")];
       return {
+        widthDelta: Math.abs(cardBox.width - viewport.clientWidth),
+        hasHorizontalOverflow: viewport.scrollWidth > viewport.clientWidth + 1,
         imageCopyGap: copy.left - image.right,
         metadataFits: metadata.every(item => item.scrollWidth <= item.clientWidth + 1),
       };
     });
-    expect(spacing.imageCopyGap).toBeGreaterThanOrEqual(24);
-    expect(spacing.metadataFits).toBe(true);
+    expect(layout.widthDelta).toBeLessThanOrEqual(1);
+    expect(layout.hasHorizontalOverflow).toBe(false);
+    expect(layout.imageCopyGap).toBeGreaterThanOrEqual(18);
+    expect(layout.metadataFits).toBe(true);
   }
 });
 
-test("collection carousel snaps an interrupted drag to one active card", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  const carousel = collection.locator(".collection-carousel");
-  await carousel.evaluate(node => {
-    const element = node as HTMLElement;
-    element.scrollTo({ left: element.clientWidth * 0.65, behavior: "auto" });
-    element.dispatchEvent(new Event("scroll"));
-  });
-  await page.waitForTimeout(450);
-  const state = await carousel.evaluate(node => ({
-    left: (node as HTMLElement).scrollLeft,
-    width: (node as HTMLElement).clientWidth,
-    active: [...node.querySelectorAll<HTMLElement>('.collection-card[data-active="true"]')].length,
-    current: [...node.querySelectorAll<HTMLElement>('.collection-pagination [aria-current="step"]')].length,
-    links: [...node.querySelectorAll<HTMLElement>('.collection-card[data-active="true"] a[aria-label*="电子证书"]')].length,
-    archiveButtons: [...node.querySelectorAll<HTMLElement>('.collection-card[data-active="true"] button[aria-label*="档案"]')].length,
-  }));
-  expect(state.left).toBeCloseTo(state.width, 0);
-  expect(state.active).toBe(1);
-  expect(state.current).toBe(1);
-  expect(state.links).toBe(1);
-  expect(state.archiveButtons).toBe(1);
-});
-
-test("certificate links point at the matching demonstration PDFs", async ({ page }) => {
+test("bracelet certificate link points at its matching demonstration PDF", async ({ page }) => {
   const collection = page.getByRole("region", { name: "我的藏品" });
   const bracelet = collection.locator('.collection-card[data-active="true"]').getByRole("link", { name: "导出海南琼南沉香手串电子证书" });
   await expect(bracelet).toBeVisible();
-  await collection.locator('.collection-card[data-active="true"]').getByRole("button", { name: "下一件藏品" }).click();
-  const tree = collection.locator('.collection-card[data-active="true"]').getByRole("link", { name: "导出琼南一号认种沉香树电子证书" });
   await expect(bracelet).toHaveAttribute("href", "/assets/certificates/bracelet-digital-certificate-demo.pdf"); await expect(bracelet).toHaveAttribute("download", "海南琼南沉香手串-电子证书-演示.pdf");
-  await expect(tree).toHaveAttribute("href", "/assets/certificates/tree-adoption-certificate-demo.pdf"); await expect(tree).toHaveAttribute("download", "琼南一号认种沉香树-认种证书-演示.pdf");
 });
 
 test("certificate download reports success and an unavailable file can be retried", async ({ page }) => {
   const success = page.waitForEvent("download"); await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click();
   await expect((await success).suggestedFilename()).toBe("海南琼南沉香手串-电子证书-演示.pdf"); await expect(page.getByRole("status")).toHaveText("电子证书已开始下载");
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  await collection.locator('.collection-card[data-active="true"]').locator('button[aria-label="下一件藏品"]').click();
-  await page.route("**/tree-adoption-certificate-demo.pdf", async route => { if (route.request().method() === "HEAD") await route.fulfill({ status: 404, body: "missing" }); else await route.continue(); });
-  await page.getByRole("link", { name: "导出琼南一号认种沉香树电子证书" }).click(); await expect(page.getByRole("status")).toHaveText("电子证书下载失败，请重试");
-  await page.unroute("**/tree-adoption-certificate-demo.pdf");
-  const retry = page.waitForEvent("download"); await page.getByRole("link", { name: "导出琼南一号认种沉香树电子证书" }).click();
-  await expect((await retry).suggestedFilename()).toBe("琼南一号认种沉香树-认种证书-演示.pdf"); await expect(page.getByRole("status")).toHaveText("电子证书已开始下载");
+  await page.route("**/bracelet-digital-certificate-demo.pdf", async route => { if (route.request().method() === "HEAD") await route.fulfill({ status: 404, body: "missing" }); else await route.continue(); });
+  await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click(); await expect(page.getByRole("status")).toHaveText("电子证书下载失败，请重试");
+  await page.unroute("**/bracelet-digital-certificate-demo.pdf");
+  const retry = page.waitForEvent("download"); await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click();
+  await expect((await retry).suggestedFilename()).toBe("海南琼南沉香手串-电子证书-演示.pdf"); await expect(page.getByRole("status")).toHaveText("电子证书已开始下载");
 });
 
 test("industrial park and knowledge rows open complete destinations", async ({ page }) => {
@@ -1130,7 +1040,10 @@ test("page PRD entry and drawer match the consumer-commission reference", async 
   await expect(drawer.getByRole("heading", { name: "页面字段", exact: true })).toBeAttached();
   await expect(drawer.getByRole("heading", { name: "页面验收标准", exact: true })).toBeAttached();
   await expect(drawer.getByRole("button", { name: "完整 PRD", exact: true })).toHaveCount(0);
-  await expect(drawer.getByText(/琼南沉香 · \d+ 个产品上下文 · 当前：首页/)).toBeVisible();
+  await expect(drawer.getByText("琼南沉香 · 15 个产品上下文 · 当前：首页", { exact: true })).toBeVisible();
+  await expect(drawer.getByText(/跳转外部认种小程序/).first()).toBeVisible();
+  await expect(drawer.getByText("认种档案", { exact: true })).toHaveCount(0);
+  await expect(drawer.getByText("成长时间线", { exact: true })).toHaveCount(0);
   await expect(drawer.getByRole("button", { name: "关闭 PRD", exact: true })).toBeVisible();
 });
 
@@ -1141,7 +1054,7 @@ test("current-page PRD follows the consumer-commission field-level writing patte
   await expect(drawer.getByRole("heading", { name: "首页 · 页面 PRD", exact: true })).toBeVisible();
   await expect(drawer.getByText("需求已整理", { exact: true })).toBeVisible();
   await expect(drawer.getByText("页面键：home", { exact: true })).toBeVisible();
-  await expect(drawer.getByText("更新：2026-08-31", { exact: true })).toBeVisible();
+  await expect(drawer.getByText("更新：2026-09-01", { exact: true })).toBeVisible();
 
   for (const heading of [
     "页面概述",
