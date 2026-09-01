@@ -1,5 +1,9 @@
 # Mobile Prototype Agent Guide
 
+## External adoption boundary (2026-09-01)
+
+`认种沉香树` is an external Mini Program entry. This H5 prototype only announces the handoff; it must not restore an internal adoption archive, adopted-tree collection item, growth timeline, or adoption certificate.
+
 ## Certificate detail fidelity note (2026-09-01)
 
 P-07 is certificate-only for this phase: use the supplied original and structured appraisal fields, exclude provenance records, and show an explicit missing-original state for unbound bracelets without cross-bracelet reuse.

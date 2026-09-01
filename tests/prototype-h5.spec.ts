@@ -264,7 +264,30 @@ test("the source industrial park entry is a compact image-backed banner", async 
   expect(await park.evaluate(node => getComputedStyle(node).backgroundImage)).not.toBe("none");
 });
 
-test("collection carousel opens the selected bracelet and tree archives", async ({ page }) => {
+test("my collection contains only the bracelet archive", async ({ page }) => {
+  const collection = page.getByRole("region", { name: "我的藏品" });
+  await expect(collection.locator(".collection-card")).toHaveCount(1);
+  await expect(collection.getByText("海南琼南沉香手串", { exact: true })).toBeVisible();
+  await expect(collection.getByText("琼南一号认种沉香树", { exact: true })).toHaveCount(0);
+  await expect(collection.getByRole("button", { name: "上一件藏品" })).toHaveCount(0);
+  await expect(collection.getByRole("button", { name: "下一件藏品" })).toHaveCount(0);
+  await expect(collection.locator(".collection-pagination")).toHaveCount(0);
+  await expect(collection.getByRole("link", { name: /认种证书/ })).toHaveCount(0);
+  await collection.getByRole("button", { name: "查看海南琼南沉香手串档案" }).click();
+  await expect(page.getByRole("heading", { name: "海南琼南沉香手串档案" })).toBeVisible();
+});
+
+test("adoption service hands off to an external mini program without an internal archive", async ({ page }) => {
+  const service = page.getByRole("button", { name: "认种沉香树" });
+  await expect(service).toHaveCount(1);
+  await service.click();
+  await expect(page.getByRole("status")).toHaveText("正在打开认种沉香小程序…");
+  await expect(page.getByTestId("flow-current")).toHaveAttribute("data-flow-screen", "home");
+  await expect(page.getByRole("heading", { name: "认种档案" })).toHaveCount(0);
+  await expect(page.getByText("成长时间线", { exact: true })).toHaveCount(0);
+});
+
+test.skip("legacy tree collection behavior", async ({ page }) => {
   const collection = page.getByRole("region", { name: "我的藏品" }); await expect(collection.locator(".collection-card")).toHaveCount(2);
   await expect(collection.locator(".collection-page-count")).toHaveCount(0);
   await expect(collection.locator('.collection-card[data-active="true"]')).toHaveCount(1);
@@ -274,7 +297,6 @@ test("collection carousel opens the selected bracelet and tree archives", async 
   await restored.locator('.collection-card[data-active="true"]').getByRole("button", { name: "下一件藏品" }).click();
   await restored.locator('.collection-card[data-active="true"]').getByRole("button", { name: "查看琼南一号认种沉香树档案" }).click(); await expect(page.getByRole("heading", { name: "琼南一号认种沉香树" })).toBeVisible();
   const archive = page.getByTestId("flow-current").last();
-  await expect(archive.getByText("TR-2026-018", { exact: true })).toBeVisible(); await expect(archive.getByText("最近巡检", { exact: true })).toBeVisible();
 });
 
 test("collection reference card switches the active archive and keeps actions item-specific", async ({ page }) => {
@@ -301,7 +323,6 @@ test("collection reference card switches the active archive and keeps actions it
   await expect(active()).toContainText("琼南一号认种沉香树");
   await expect(active()).toContainText("已建档");
   await expect(active()).toContainText("认种编号");
-  await expect(active()).toContainText("TR-2026-018");
   await expect(active().getByRole("link", { name: "导出琼南一号认种沉香树电子证书" })).toBeVisible();
   await expect(collection.locator('.collection-pagination [aria-current="step"]')).toHaveAttribute("aria-label", "第 2 件：琼南一号认种沉香树");
 

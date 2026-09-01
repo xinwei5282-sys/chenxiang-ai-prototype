@@ -96,11 +96,6 @@ const productDocPages = {
     flowHeadings: ["FLOW-06 藏品档案与电子证书"], stateHeadings: [], requirementPrefixes: ["FR-COLLECTION-", "FR-CERT-"],
     apiHeadings: ["`GET /v1/bracelets/{bracelet_id}`", "`GET /v1/certificates/{certificate_id}`"], acceptancePrefixes: ["AC-COLLECTION-", "AC-ERROR-"],
   },
-  "adoption-archive": {
-    label: "P-14 认种档案", guideHeading: "DOC-P-14 认种档案", specHeading: "P-14 认种档案",
-    flowHeadings: ["FLOW-06 藏品档案与电子证书"], stateHeadings: [], requirementPrefixes: ["FR-COLLECTION-"],
-    apiHeadings: [], acceptancePrefixes: ["AC-COLLECTION-", "AC-ERROR-"],
-  },
   "industrial-park": {
     label: "P-15 源头产业园", guideHeading: "DOC-P-15 源头产业园", specHeading: "P-15 源头产业园",
     flowHeadings: ["FLOW-07 内容阅读"], stateHeadings: [], requirementPrefixes: ["FR-PARK-", "FR-CONTENT-"],
@@ -130,7 +125,6 @@ const pagePrdDefaults: Record<ProductDocPageKey, PagePrd> = {
   "chip-help": { goal: "说明 NFC 识别步骤，并为失败用户提供重试路径。", roles: "首次识别用户、售后人员", entry: "识别失败提示；首页识别说明", permission: "公开可读", rules: ["说明必须短、可操作，失败时优先给重试。", "芯片识别说明下不再放重复说明文字。"], fields: [["识别步骤", "步骤列表", "必填展示", "靠近、保持、等待"],["重新识别", "按钮", "识别失败展示", "重新发起 NFC 识别"]], actions: [["重新识别", "失败状态", "再次调用识别能力", "记录失败与重试次数"]], boundary: "无法识别不等于商品异常，需提供人工核验渠道。", states: "待识别→识别中→成功/失败。", logs: "记录设备能力、耗时、结果码和重试次数。", empty: "设备不支持 NFC 时提示兼容方案。", acceptance: ["用户能理解下一步并完成重试。"], tech: ["兼容 NFC 不可用与权限拒绝。"] },
   "certificate-list": { goal: "让多手串用户先选择手串，再查看所选手串的证书详情或原件待补充状态。", roles: "拥有绑定手串的已授权消费者", entry: "我的→证书数量", permission: "微信授权后，仅本人绑定数据", rules: ["导航标题下直接开始全宽列表，不显示眉题、大标题、数量说明或引导文案。", "点击任一手串整行进入该手串的证书详情。", "有证书显示编号、重量与原件已收录；无证书显示规格与原件待补充。"], fields: [["缩略图", "图片", "每行必显", "与 bracelet_id 对应"],["手串名称", "文本", "每行必显", "使用绑定记录名称"],["证书摘要", "状态文本", "每行必显", "按当前手串显示已收录或待补充，不跨手串复用"]], actions: [["手串列表项", "有绑定数据", "进入所选手串的证书详情", "记录 bracelet_id 并校验归属"],["返回", "始终展示", "回到我的", "保留列表位置"]], boundary: "只展示当前账号已绑定手串；不在详情内增加左右滑动或相邻证书切换。", states: "加载→手串列表/空态/失败；选择手串→证书详情/原件待补充。", logs: "记录列表查看、所选 bracelet_id 和加载错误。", empty: "无绑定手串时展示空态和芯片识别说明；单串无证书时显示原件待补充。", acceptance: ["原型恰好展示三条手串记录。", "点击第二、第三条后不得显示第一条证书数据。", "列表行触控高度不小于 76px。"], tech: ["列表接口需支持分页、绑定状态和账号隔离。", "证书详情必须使用所选 bracelet_id 查询。"] },
   "collection-archive": { goal: "展示首页藏品中的手串档案和可下载电子证书。", roles: "查看本人藏品的消费者", entry: "首页我的藏品→手串卡片", permission: "原型可直接查看；生产个人档案需授权并校验归属", rules: ["档案数据必须与首页藏品卡片一致。", "电子证书使用对应藏品文件名，下载失败不得离开页面。"], fields: [["手串图片", "图片", "必显", "与首页藏品图一致"],["名称与档案编号", "文本", "必显", "原型为海南琼南沉香手串 / CX-2018-072"],["材质与规格", "属性", "必显", "展示档案登记信息"],["档案状态", "状态", "必显", "已认证或异常"],["电子证书", "PDF 文件", "有证书展示", "文件名与藏品一致"]], actions: [["下载电子证书", "证书可用", "开始下载 PDF 并提示结果", "记录 collection_id、文件版本与结果"]], boundary: "档案和证书不构成功效、价格或投资价值承诺。", states: "加载→档案/失败；下载→准备中/成功/失败。", logs: "记录档案查看、证书版本和下载结果。", empty: "档案不存在时提示返回首页；下载失败保留页面并允许重试。", acceptance: ["档案数据与首页卡片一致。", "证书文件名、编号与当前藏品一致。"], tech: ["档案与证书关系由服务端校验。", "下载地址需短时有效并防越权。"] },
-  "adoption-archive": { goal: "展示认种树档案、生长状态、成长时间线和认种证书。", roles: "查看本人认种档案的消费者", entry: "首页我的藏品→认种树；认种沉香树服务", permission: "原型可直接查看；生产个人档案需授权并校验归属", rules: ["生长状态按实际更新时间展示，缺数据不得编造。", "手串证书与认种证书使用不同模板和文件。"], fields: [["树名称与编号", "文本", "必显", "原型为琼南一号认种沉香树 / TR-2026-018"],["基地、树龄与日期", "属性", "必显", "展示认种登记信息"],["成长时间线", "时间线", "必显", "按认种、建档、巡检和回访顺序展示"],["认种证书", "PDF 文件", "有证书展示", "不得与手串证书互换"]], actions: [["下载认种证书", "证书可用", "开始下载 PDF 并提示结果", "记录 adoption_id、文件版本和结果"],["前往认种", "固定展示", "提示商城即将上线", "不创建商品或订单"]], boundary: "生长数据以实际记录为准，本期不建设在线认种交易。", states: "加载→档案/失败；下载→准备中/成功/失败；前往认种→即将上线提示。", logs: "记录档案曝光、证书下载和商城预告点击。", empty: "档案缺失提示返回首页；证书下载失败保留页面并可重试。", acceptance: ["时间线顺序正确。", "手串证书与认种证书文件不可互换。"], tech: ["时间序列数据按发生时间排序。", "下载地址需按账号和 adoption_id 鉴权。"] },
   "industrial-park": { goal: "用图集和视频介绍产区、育苗、加工与品控，增强源头信任。", roles: "品牌访客和消费者", entry: "首页走进产业园", permission: "公开可读", rules: ["原型固定使用四张图和模拟播放状态。", "生产环境只使用已审核素材和真实媒体，不将图集伪装为交易入口。"], fields: [["园区图集", "横向轮播", "四项必显", "万亩基地、标准化育苗、无尘加工、全链路品控"],["当前页码", "数字", "图集下方展示", "随当前图同步为 1/4 至 4/4"],["介绍视频", "媒体按钮", "固定展示", "显示播放/暂停状态与当前时长"],["园区说明", "文本", "必显", "展示国资国企、基地与全链路品控信息"]], actions: [["横向浏览图集", "图集可用", "切换当前图片并同步页码", "记录 slide_index"],["播放 / 暂停", "视频入口可用", "切换模拟播放状态", "记录播放状态与失败原因"],["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "产业园内容只作品牌与生产过程展示，事实和素材必须经品牌方审核。", states: "加载→图集可用/单图失败；视频待播放→播放中→暂停/失败。", logs: "记录图集曝光、页码切换、视频播放和媒体错误。", empty: "单张图片或视频失败不阻塞其他图文；全部内容失败时展示重试。", acceptance: ["图集固定四项且页码同步。", "视频播放和暂停状态可切换。"], tech: ["图片需懒加载和缓存。", "生产视频需评估流量、转码和降级策略。"] },
   "knowledge-article": { goal: "以接近微信公众号的长文结构展示沉香小知识，当前仅展示。", roles: "文化内容读者", entry: "沉香知识卡片", permission: "公开可读", rules: ["详情页只做展示，不提供点赞、评论、分享或交易操作。", "文章标题、来源、更新时间和正文完整呈现。"], fields: [["文章标题", "文本", "必填展示", "对应知识主题"],["文章正文", "富文本", "必填展示", "微信公众号式段落阅读"],["来源与时间", "元信息", "有数据展示", "标记内容来源和更新时间"]], actions: [["返回", "始终展示", "回到知识列表/来源页", "无业务记录"]], boundary: "文章是知识参考，不构成鉴定结论。", states: "加载→文章/失败。", logs: "记录文章曝光与阅读完成。", empty: "文章缺失展示重试。", acceptance: ["正文可滚动阅读且不出现空白页。"], tech: ["富文本需过滤危险标签，图片懒加载。"] },
 };
@@ -238,7 +232,7 @@ function ProductDocumentReview() {
           <div ref={bodyRef} className="product-doc-review-body">
             <CurrentPagePrd pageKey={activePageKey as ProductDocPageKey} />
           </div>
-          <footer className="product-doc-review-footer"><span>琼南沉香 · 16 个产品上下文 · 当前：{productDocPages[activePageKey as ProductDocPageKey]?.label.replace(/^P-\d+\s*/, "") || "首页"}</span><button type="button" onClick={() => setOpen(false)}>关闭 PRD</button></footer>
+          <footer className="product-doc-review-footer"><span>琼南沉香 · 15 个产品上下文 · 当前：{productDocPages[activePageKey as ProductDocPageKey]?.label.replace(/^P-\d+\s*/, "") || "首页"}</span><button type="button" onClick={() => setOpen(false)}>关闭 PRD</button></footer>
         </> : null}
       </aside>
     </div>,
@@ -348,10 +342,9 @@ function HomeServiceLink({ icon, title, note, onClick, testId, ariaLabel }: { ic
   </button>;
 }
 
-type Collectible = { id: "bracelet" | "tree"; name: string; number: string; image: string; imageAlt: string; facts: readonly [string, string][]; certificateHref: string; certificateFilename: string };
+type Collectible = { id: "bracelet"; name: string; number: string; image: string; imageAlt: string; facts: readonly [string, string][]; certificateHref: string; certificateFilename: string };
 const collectibles: Collectible[] = [
   { id: "bracelet", name: "海南琼南沉香手串", number: "CX-2018-072", facts: [["材质", "海南沉香"], ["规格", "18mm · 16颗"], ["状态", "身份已核验"]], image: "/assets/customer-feedback/collection-bracelet-thumbnail.png", imageAlt: "海南琼南沉香手串", certificateHref: "/assets/certificates/bracelet-digital-certificate-demo.pdf", certificateFilename: "海南琼南沉香手串-电子证书-演示.pdf" },
-  { id: "tree", name: "琼南一号认种沉香树", number: "TR-2026-018", facts: [["基地", "琼南沉香产业园"], ["树龄", "3年"], ["状态", "生长良好 · 已建档"]], image: "/assets/customer-feedback/collection-tree.svg", imageAlt: "琼南一号认种沉香树", certificateHref: "/assets/certificates/tree-adoption-certificate-demo.pdf", certificateFilename: "琼南一号认种沉香树-认种证书-演示.pdf" },
 ];
 
 function CertificateDownloadLink({ item, onToast, showIcon = false }: { item: Collectible; onToast: (message: string) => void; showIcon?: boolean }) {
@@ -367,26 +360,22 @@ function CertificateDownloadLink({ item, onToast, showIcon = false }: { item: Co
   return <a href={item.certificateHref} download={item.certificateFilename} aria-label={`导出${item.name}电子证书`} onClick={download}>{showIcon ? <FileText aria-hidden="true" /> : null}<span>导出电子证书</span></a>;
 }
 
-function CollectionCard({ item, index, activeIndex, onStep, onOpen, onToast }: { item: Collectible; index: number; activeIndex: number; onStep: (delta: -1 | 1) => void; onOpen: () => void; onToast: (message: string) => void }) {
-  const status = item.id === "tree" ? "已建档" : "已认证";
-  const numberLabel = item.id === "tree" ? "认种编号" : "档案编号";
+function CollectionCard({ item, onOpen, onToast }: { item: Collectible; onOpen: () => void; onToast: (message: string) => void }) {
+  const status = "已认证";
+  const numberLabel = "档案编号";
   const visibleFacts = item.facts.filter(([label]) => label !== "状态").slice(0, 2);
-  return <article className="collection-card" data-active={index === activeIndex ? "true" : "false"} inert={index !== activeIndex ? true : undefined} aria-hidden={index !== activeIndex ? true : undefined}>
+  return <article className="collection-card" data-active="true">
     <header className="collection-card-header"><h3>我的藏品</h3><CertificateDownloadLink item={item} onToast={onToast} showIcon /><button type="button" aria-label={`查看${item.name}档案`} onClick={onOpen}>查看档案<ChevronRightIcon aria-hidden="true" /></button></header>
-    <div className="collection-card-body"><button className="collection-step previous" type="button" aria-label="上一件藏品" onClick={() => onStep(-1)}><ChevronLeftIcon aria-hidden="true" /></button><img src={item.image} alt={item.imageAlt} /><div className="collection-card-copy"><div className="collection-name-row"><strong>{item.name}</strong><small><CheckCircledIcon aria-hidden="true" />{status}</small></div><dl><div><dt>{numberLabel}</dt><dd>{item.number}</dd></div>{visibleFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div><span className="collection-seal" aria-hidden="true">{item.id === "tree" ? "树" : "香"}</span><button className="collection-step next" type="button" aria-label="下一件藏品" onClick={() => onStep(1)}><ChevronRightIcon aria-hidden="true" /></button></div>
-    <ol className="collection-pagination" aria-label="藏品位置">{collectibles.map((entry, dotIndex) => <li key={entry.id} aria-label={`第 ${dotIndex + 1} 件：${entry.name}`} aria-current={index === activeIndex && dotIndex === activeIndex ? "step" : undefined} />)}</ol>
+    <div className="collection-card-body"><img src={item.image} alt={item.imageAlt} /><div className="collection-card-copy"><div className="collection-name-row"><strong>{item.name}</strong><small><CheckCircledIcon aria-hidden="true" />{status}</small></div><dl><div><dt>{numberLabel}</dt><dd>{item.number}</dd></div>{visibleFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div><span className="collection-seal" aria-hidden="true">香</span></div>
   </article>;
 }
 function CollectionShowcase({ flow, keyboard, onToast }: { flow: any; keyboard: ReturnType<typeof useKeyboard>; onToast: (message: string) => void }) {
-  const sectionRef = useRef<HTMLElement>(null); const [activeIndex, setActiveIndex] = useState(0);
-  useEffect(() => { const carousel = sectionRef.current?.querySelector<HTMLElement>(".collection-carousel"); if (!carousel) return; let settleTimer: number | undefined; const update = () => { const width = Math.max(1, carousel.clientWidth); const next = Math.max(0, Math.min(collectibles.length - 1, Math.round(carousel.scrollLeft / width))); setActiveIndex(next); window.clearTimeout(settleTimer); settleTimer = window.setTimeout(() => { const target = next * width; if (Math.abs(carousel.scrollLeft - target) > 1) carousel.scrollTo({ left: target, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }, 120); }; carousel.addEventListener("scroll", update, { passive: true }); update(); return () => { carousel.removeEventListener("scroll", update); window.clearTimeout(settleTimer); }; }, []);
-  const selectRelative = (delta: -1 | 1) => { const next = (activeIndex + delta + collectibles.length) % collectibles.length; const carousel = sectionRef.current?.querySelector<HTMLElement>(".collection-carousel"); const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; setActiveIndex(next); carousel?.scrollTo({ left: next * carousel.clientWidth, behavior: reducedMotion ? "auto" : "smooth" }); };
-  const openArchive = (item: Collectible) => { prepareH5Transition(keyboard); flow.push(item.id === "tree" ? adoptionArchiveScreen(keyboard) : collectionArchiveScreen(keyboard)); };
-  return <section ref={sectionRef} className="home-collection" data-home-section="home-collection" aria-label="我的藏品"><Carousel className="collection-carousel" contentClassName="collection-carousel-content" ariaLabel="我的藏品轮播">{collectibles.map((item, index) => <CollectionCard key={item.number} item={item} index={index} activeIndex={activeIndex} onStep={selectRelative} onToast={onToast} onOpen={() => openArchive(item)} />)}</Carousel></section>;
+  const openArchive = () => { prepareH5Transition(keyboard); flow.push(collectionArchiveScreen(keyboard)); };
+  return <section className="home-collection" data-home-section="home-collection" aria-label="我的藏品"><Carousel className="collection-carousel" contentClassName="collection-carousel-content" ariaLabel="我的藏品轮播"><CollectionCard item={collectibles[0]} onToast={onToast} onOpen={openArchive} /></Carousel></section>;
 }
-function ArchiveCertificate({ item, mall = false }: { item: Collectible; mall?: boolean }) {
+function ArchiveCertificate({ item }: { item: Collectible }) {
   const toast = useTransientMessage();
-  return <><div className="archive-actions"><CertificateDownloadLink item={item} onToast={toast.show} />{mall ? <button onClick={() => toast.show("商城即将上线，敬请期待")}>前往认种</button> : null}</div><PrototypeToast message={toast.message} /></>;
+  return <><div className="archive-actions"><CertificateDownloadLink item={item} onToast={toast.show} /></div><PrototypeToast message={toast.message} /></>;
 }
 const parkSlides = [["/assets/customer-feedback/park-detail-base.png", "万亩沉香种植基地", "从林场环境、种植批次到日常养护建立基础档案。"], ["/assets/customer-feedback/park-detail-nursery.png", "标准化育苗", "记录苗木来源、生长阶段与养护责任。"], ["/assets/customer-feedback/park-detail-workshop.png", "无尘加工车间", "分区完成选料、加工、质检与包装。"], ["/assets/customer-feedback/park-detail-quality.png", "全链路品控", "把批次、制作、质检与芯片身份串联起来。"]] as const;
 const selectionItems = [
@@ -477,7 +466,7 @@ function Home({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof useKe
   <HomeServiceLink icon={<FileCheck />} title="证书查询" testId="home-certificate-link" ariaLabel="查看证书查询" onClick={openProvenance} />
           <HomeServiceLink icon={<Link2Icon />} title="佩戴养护" onClick={() => { prepareH5Transition(keyboard); flow.push(careScreen(keyboard)); }} />
           <HomeServiceLink icon={<BookOpen />} title="沉香知识" onClick={() => { prepareH5Transition(keyboard); flow.push(knowledgeScreen(keyboard)); }} />
-          <HomeServiceLink icon={<Sprout />} title="认种沉香树" onClick={() => { prepareH5Transition(keyboard); flow.push(adoptionArchiveScreen(keyboard)); }} />
+          <HomeServiceLink icon={<Sprout />} title="认种沉香树" onClick={() => { prepareH5Transition(keyboard); toast.show("正在打开认种沉香小程序…"); }} />
         </section>
         <section className="home-park home-park-banner" data-home-section="home-park">
           <div className="home-park-copy">
@@ -648,10 +637,6 @@ function FortuneAgent({ keyboard }: { keyboard: ReturnType<typeof useKeyboard> }
 const collectionArchiveScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
   id: "collection-archive", header: flow => <TopBar title="手串档案" back={flow.pop} keyboard={keyboard} />, headerHeight: 54,
   render: () => <MobileScroll className="app-screen"><main className="screen-content detail-content collection-archive" data-product-doc-page="collection-archive"><p className="page-eyebrow">我的藏品 · 已认证</p><img className="archive-hero" src={product} alt="海南琼南沉香手串" /><h2>海南琼南沉香手串档案</h2><p className="archive-number">CX-2018-072</p><div className="archive-meta">{collectibles[0].facts.map(([label,value]) => <span key={label}>{label}<strong>{value}</strong></span>)}</div><ArchiveCertificate item={collectibles[0]} /></main></MobileScroll>,
-});
-const adoptionArchiveScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
-  id: "adoption-archive", header: flow => <TopBar title="认种档案" back={flow.pop} keyboard={keyboard} />, headerHeight: 54,
-  render: () => <MobileScroll className="app-screen"><main className="screen-content detail-content adoption-archive" data-product-doc-page="adoption-archive"><p className="page-eyebrow">我的藏品 · 林木认种</p><img className="archive-hero tree" src={collectibles[1].image} alt={collectibles[1].imageAlt} /><h2>琼南一号认种沉香树</h2><p className="archive-number">TR-2026-018</p><div className="archive-meta">{collectibles[1].facts.map(([label,value]) => <span key={label}>{label}<strong>{value}</strong></span>)}<span>认种日期<strong>2026年8月18日</strong></span></div><div className="timeline">{[["认种登记", "2026.01", "完成认种信息登记"],["养护建档", "2026.03", "树苗生长稳定"],["最近巡检", "2026.08", "叶色正常，长势良好"],["下一次回访", "2026.11", "计划进行季度回访"]].map(([a,b,c]) => <div className="timeline-item" key={a}><span className="timeline-dot" /><div><small>{b}</small><strong>{a}</strong><p>{c}</p></div></div>)}</div><ArchiveCertificate item={collectibles[1]} mall /></main></MobileScroll>,
 });
 const certificateListScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
   id: "certificate-list", header: flow => <TopBar title="我的手串" back={flow.pop} keyboard={keyboard} />, headerHeight: 54,
