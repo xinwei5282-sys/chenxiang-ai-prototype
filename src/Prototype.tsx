@@ -13,7 +13,6 @@ import {
   Link2Icon,
   MagicWandIcon,
   PersonIcon,
-  SewingPinIcon,
   ArrowUpIcon,
 } from "@radix-ui/react-icons";
 import { BookOpen, FileCheck, FileText, Sprout } from "lucide-react";
@@ -76,11 +75,6 @@ const productDocPages = {
     flowHeadings: [], stateHeadings: [], requirementPrefixes: ["FR-CONTENT-"],
     apiHeadings: ["`GET /v1/content/{content_key}`"], acceptancePrefixes: ["AC-HOME-", "AC-CONTENT-", "AC-ERROR-"],
   },
-  "farm-story": {
-    label: "P-10 农垦故事", guideHeading: "DOC-P-10 农垦故事", specHeading: "P-10 农垦故事",
-    flowHeadings: [], stateHeadings: [], requirementPrefixes: ["FR-CONTENT-"],
-    apiHeadings: ["`GET /v1/content/{content_key}`"], acceptancePrefixes: ["AC-CONTENT-", "AC-ERROR-"],
-  },
   "chip-help": {
     label: "P-11 芯片识别说明", guideHeading: "DOC-P-11 芯片识别说明", specHeading: "P-11 芯片识别说明",
     flowHeadings: ["FLOW-01 芯片识别到首页"], stateHeadings: [], requirementPrefixes: ["FR-ID-"],
@@ -120,12 +114,11 @@ const pagePrdDefaults: Record<ProductDocPageKey, PagePrd> = {
   "reading-record-detail": { goal: "完整呈现历史问帖上下文，并让用户从独立入口开启新问帖。", roles: "已授权消费者", entry: "问帖记录列表", permission: "仅记录所属用户", rules: ["历史消息只读，不展示输入框。", "开启新问帖必须创建新的 conversation_id，不续接当前历史。"], fields: [["问帖主题", "文本", "必显", "展示历史问题标题"],["消息时间线", "只读列表", "有记录展示", "保留问答顺序、角色与内容"],["AI 免责声明", "说明文本", "AI 内容必显", "内容由 AI 生成，仅供娱乐参考"],["开启新问帖", "按钮", "固定展示", "进入全新对话"]], actions: [["开启新问帖", "始终展示", "创建新会话并进入问帖空态", "记录来源 conversation_id，不复用该 ID"],["返回", "始终展示", "返回问帖记录列表", "保留列表位置"]], boundary: "历史内容只读，不代表当前专业结论，也不能在本页继续发送消息。", states: "加载→详情/不存在/越权；开启新问帖→全新对话。", logs: "记录详情查看、越权拦截和新问帖点击。", empty: "记录不存在或越权统一提示这条问帖记录已不存在，并返回列表。", acceptance: ["历史页不展示输入框。", "开启新问帖后进入无旧消息的新对话。"], tech: ["服务端校验 conversation_id 所属关系。", "不存在与越权使用统一外显错误。"] },
   certificate: { goal: "展示证书原件与结构化检验字段，并按手串独立绑定。", roles: "持有效扫描会话的匿名用户；拥有绑定关系的已授权用户", entry: "首页证书查询；我的→我的手串", permission: "公开扫描证书可读；绑定列表来源需校验账号归属", rules: ["仅展示证书原件和结构化检验字段，本期不建设溯源记录。", "首页使用 current_bracelet_id，列表使用 selected_bracelet_id，证书对象必须归属对应手串。", "缺少原件时显示待补充，不得复用其他手串证书。"], fields: [["证书原件", "图片", "有原件展示", "完整展示并支持适应宽度与 2× 查看"],["样品名称", "文本", "有证书展示", "与证书原件一致"],["证书编号", "文本", "有证书展示", "唯一证书标识"],["样品重量与检验结论", "文本", "有证书展示", "按证书原文展示"],["科属、备注与放大检查", "文本", "有证书展示", "按证书原文展示"],["执行标准与查询码", "文本", "有证书展示", "查询码本期只展示"]], actions: [["查看证书原件", "原件已收录", "打开手机内原图查看层", "点击切换适应宽度与 2×"],["关闭原件", "查看层打开", "返回证书详情", "支持按钮与 Esc"],["返回", "始终展示", "返回首页或我的手串", "保留来源上下文"]], boundary: "本期不建设溯源记录、证书查询接口、复制动作或二维码生成，也不把证书表述为功效、价格或投资价值承诺。", states: "详情→原件查看/图片失败；多手串→完整证书或原件待补充。", logs: "记录 bracelet_id、certificate_id、查看来源、原图查看和图片失败，不记录原件外的推断字段。", empty: "图片加载失败显示证书原件暂时无法加载，结构化字段仍可阅读；无原件显示证书原件待补充。", acceptance: ["证书原件完整可查看，并可在适应宽度与 2× 之间切换。", "无原件手串不复用其他手串证书。", "iPhone 与 Pixel 均无横向溢出或关键内容遮挡。"], tech: ["证书对象必须归属对应 bracelet_id。", "原图资源失败时必须独立降级，不影响字段展示。"] },
   care: { goal: "提供连续、易执行的佩戴和养护指南。", roles: "沉香手串消费者", entry: "首页佩戴养护", permission: "公开可读", rules: ["按七个步骤连续阅读。", "明确避化学品、避高温、密封收存等风险。"], fields: [["养护步骤", "长文列表", "必填展示", "标题、说明和注意事项"],["步骤序号", "序号", "必填展示", "保持阅读顺序"]], actions: [["返回", "始终展示", "返回来源页", "无业务记录"]], boundary: "仅为日常保养建议，不替代专业维修。", states: "加载→正文/失败。", logs: "记录内容曝光和阅读完成。", empty: "内容缺失展示重试。", acceptance: ["七步内容顺序正确且无截断。"], tech: ["正文支持版本化和缓存。"] },
-  knowledge: { goal: "提供沉香基础知识，并承接农垦故事入口。", roles: "消费者、文化内容读者", entry: "首页沉香知识", permission: "公开可读", rules: ["知识入口展示摘要，详情使用文章页。", "删除传统文化解读独立入口，避免信息重复。"], fields: [["知识卡片", "入口卡", "必填展示", "标题、摘要、封面"],["农垦故事", "入口", "固定展示", "进入故事页"]], actions: [["知识卡片", "有内容", "进入文章详情", "记录 content_key"],["农垦故事", "始终展示", "进入故事页", "记录入口来源"]], boundary: "知识内容需标注来源和更新时间。", states: "加载→内容/空态/失败。", logs: "记录内容曝光、点击与版本。", empty: "无内容展示稍后再看。", acceptance: ["卡片点击后进入对应文章。"], tech: ["内容 key 与版本需稳定。"] },
-  "farm-story": { goal: "讲清产区环境、农垦积淀与从林场到手串的过程。", roles: "品牌访客、消费者", entry: "沉香知识→农垦故事", permission: "公开可读", rules: ["按产区、育苗、加工、品控顺序组织内容。"], fields: [["故事正文", "长文", "必填展示", "图文讲述源头故事"],["内容更新时间", "文本", "有数据展示", "帮助判断内容时效"]], actions: [["返回", "始终展示", "返回知识页", "无业务记录"]], boundary: "品牌故事与事实信息分层呈现。", states: "加载→正文/失败。", logs: "记录文章曝光和阅读。", empty: "内容缺失展示重试。", acceptance: ["正文结构完整，图片有替代文本。"], tech: ["媒体资源需懒加载。"] },
+  knowledge: { goal: "提供沉香形成、闻香与产区差异三项基础知识。", roles: "消费者、文化内容读者", entry: "首页沉香知识或查看更多", permission: "公开可读", rules: ["知识页只展示三项基础知识。", "产业源头和园区介绍统一由首页走进产业园承接。"], fields: [["基础知识", "正文", "三项完整展示", "沉香如何形成、怎样闻香、常见产区差异"]], actions: [["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "不展示产业源头或农垦故事入口。", states: "加载→内容/空态/失败。", logs: "记录内容曝光与版本。", empty: "无内容展示稍后再看。", acceptance: ["三项知识可读，产业入口已移除。"], tech: ["内容 key 与版本需稳定。"] },
   "chip-help": { goal: "说明 NFC 识别步骤，并为失败用户提供重试路径。", roles: "首次识别用户、售后人员", entry: "识别失败提示；首页识别说明", permission: "公开可读", rules: ["说明必须短、可操作，失败时优先给重试。", "芯片识别说明下不再放重复说明文字。"], fields: [["识别步骤", "步骤列表", "必填展示", "靠近、保持、等待"],["重新识别", "按钮", "识别失败展示", "重新发起 NFC 识别"]], actions: [["重新识别", "失败状态", "再次调用识别能力", "记录失败与重试次数"]], boundary: "无法识别不等于商品异常，需提供人工核验渠道。", states: "待识别→识别中→成功/失败。", logs: "记录设备能力、耗时、结果码和重试次数。", empty: "设备不支持 NFC 时提示兼容方案。", acceptance: ["用户能理解下一步并完成重试。"], tech: ["兼容 NFC 不可用与权限拒绝。"] },
   "certificate-list": { goal: "让多手串用户先选择手串，再查看所选手串的证书详情或原件待补充状态。", roles: "拥有绑定手串的已授权消费者", entry: "我的→证书数量", permission: "微信授权后，仅本人绑定数据", rules: ["导航标题下直接开始全宽列表，不显示眉题、大标题、数量说明或引导文案。", "点击任一手串整行进入该手串的证书详情。", "有证书显示编号、重量与原件已收录；无证书显示规格与原件待补充。"], fields: [["缩略图", "图片", "每行必显", "与 bracelet_id 对应"],["手串名称", "文本", "每行必显", "使用绑定记录名称"],["证书摘要", "状态文本", "每行必显", "按当前手串显示已收录或待补充，不跨手串复用"]], actions: [["手串列表项", "有绑定数据", "进入所选手串的证书详情", "记录 bracelet_id 并校验归属"],["返回", "始终展示", "回到我的", "保留列表位置"]], boundary: "只展示当前账号已绑定手串；不在详情内增加左右滑动或相邻证书切换。", states: "加载→手串列表/空态/失败；选择手串→证书详情/原件待补充。", logs: "记录列表查看、所选 bracelet_id 和加载错误。", empty: "无绑定手串时展示空态和芯片识别说明；单串无证书时显示原件待补充。", acceptance: ["原型恰好展示三条手串记录。", "点击第二、第三条后不得显示第一条证书数据。", "列表行触控高度不小于 76px。"], tech: ["列表接口需支持分页、绑定状态和账号隔离。", "证书详情必须使用所选 bracelet_id 查询。"] },
   "collection-archive": { goal: "展示首页藏品中的手串档案和可下载电子证书。", roles: "查看本人藏品的消费者", entry: "首页我的藏品→手串卡片", permission: "原型可直接查看；生产个人档案需授权并校验归属", rules: ["档案数据必须与首页藏品卡片一致。", "电子证书使用对应藏品文件名，下载失败不得离开页面。"], fields: [["手串图片", "图片", "必显", "与首页藏品图一致"],["名称与档案编号", "文本", "必显", "原型为海南琼南沉香手串 / CX-2018-072"],["材质与规格", "属性", "必显", "展示档案登记信息"],["档案状态", "状态", "必显", "已认证或异常"],["电子证书", "PDF 文件", "有证书展示", "文件名与藏品一致"]], actions: [["下载电子证书", "证书可用", "开始下载 PDF 并提示结果", "记录 collection_id、文件版本与结果"]], boundary: "档案和证书不构成功效、价格或投资价值承诺。", states: "加载→档案/失败；下载→准备中/成功/失败。", logs: "记录档案查看、证书版本和下载结果。", empty: "档案不存在时提示返回首页；下载失败保留页面并允许重试。", acceptance: ["档案数据与首页卡片一致。", "证书文件名、编号与当前藏品一致。"], tech: ["档案与证书关系由服务端校验。", "下载地址需短时有效并防越权。"] },
-  "industrial-park": { goal: "用图集和视频介绍产区、育苗、加工与品控，增强源头信任。", roles: "品牌访客和消费者", entry: "首页走进产业园", permission: "公开可读", rules: ["原型固定使用四张图和模拟播放状态。", "生产环境只使用已审核素材和真实媒体，不将图集伪装为交易入口。"], fields: [["园区图集", "横向轮播", "四项必显", "万亩基地、标准化育苗、无尘加工、全链路品控"],["当前页码", "数字", "图集下方展示", "随当前图同步为 1/4 至 4/4"],["介绍视频", "媒体按钮", "固定展示", "显示播放/暂停状态与当前时长"],["园区说明", "文本", "必显", "展示国资国企、基地与全链路品控信息"]], actions: [["横向浏览图集", "图集可用", "切换当前图片并同步页码", "记录 slide_index"],["播放 / 暂停", "视频入口可用", "切换模拟播放状态", "记录播放状态与失败原因"],["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "产业园内容只作品牌与生产过程展示，事实和素材必须经品牌方审核。", states: "加载→图集可用/单图失败；视频待播放→播放中→暂停/失败。", logs: "记录图集曝光、页码切换、视频播放和媒体错误。", empty: "单张图片或视频失败不阻塞其他图文；全部内容失败时展示重试。", acceptance: ["图集固定四项且页码同步。", "视频播放和暂停状态可切换。"], tech: ["图片需懒加载和缓存。", "生产视频需评估流量、转码和降级策略。"] },
+  "industrial-park": { goal: "以关键数据、产业链与分节正文介绍曙光农场全产业链。", roles: "品牌访客和消费者", entry: "首页走进产业园", permission: "公开可读", rules: ["采用图文专题排版，使用客户确认的航拍全景、林业服务站和高效种植示范基地三张照片，不展示演示图集和模拟视频。", "结香技术为试验探索，沉香提取物用于日化、药品等为研发方向。"], fields: [["规模数据", "数据摘要", "四项展示", "1万余亩、44万余株、98个种质资源、2.5万余平方米加工园"],["产业链", "有序列表", "必显", "良种选育、标准化种植、精深加工、品牌培育、线上线下销售"],["园区说明", "分节正文", "六节完整展示", "产业源头与种质资源、技术标准、结香探索、精深加工、出口贸易、品牌发展"]], actions: [["纵向阅读", "始终可用", "阅读全部正文", "记录内容曝光"],["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "按客户提供的文字与确认采用的照片展示；林业服务站不可标注为深加工车间。", states: "加载→完整正文/失败。", logs: "记录内容曝光和加载错误。", empty: "内容加载失败显示重试。", acceptance: ["关键数据准确，长文可完整滚动阅读。", "不出现图集页码或模拟视频入口。"], tech: ["保留内容版本，后续实际媒体须审核后接入。"] },
   "knowledge-article": { goal: "以接近微信公众号的长文结构展示沉香小知识，当前仅展示。", roles: "文化内容读者", entry: "沉香知识卡片", permission: "公开可读", rules: ["详情页只做展示，不提供点赞、评论、分享或交易操作。", "文章标题、来源、更新时间和正文完整呈现。"], fields: [["文章标题", "文本", "必填展示", "对应知识主题"],["文章正文", "富文本", "必填展示", "微信公众号式段落阅读"],["来源与时间", "元信息", "有数据展示", "标记内容来源和更新时间"]], actions: [["返回", "始终展示", "回到知识列表/来源页", "无业务记录"]], boundary: "文章是知识参考，不构成鉴定结论。", states: "加载→文章/失败。", logs: "记录文章曝光与阅读完成。", empty: "文章缺失展示重试。", acceptance: ["正文可滚动阅读且不出现空白页。"], tech: ["富文本需过滤危险标签，图片懒加载。"] },
 };
 
@@ -377,33 +370,53 @@ function ArchiveCertificate({ item }: { item: Collectible }) {
   const toast = useTransientMessage();
   return <><div className="archive-actions"><CertificateDownloadLink item={item} onToast={toast.show} /></div><PrototypeToast message={toast.message} /></>;
 }
-const parkSlides = [["/assets/customer-feedback/park-detail-base.png", "万亩沉香种植基地", "从林场环境、种植批次到日常养护建立基础档案。"], ["/assets/customer-feedback/park-detail-nursery.png", "标准化育苗", "记录苗木来源、生长阶段与养护责任。"], ["/assets/customer-feedback/park-detail-workshop.png", "无尘加工车间", "分区完成选料、加工、质检与包装。"], ["/assets/customer-feedback/park-detail-quality.png", "全链路品控", "把批次、制作、质检与芯片身份串联起来。"]] as const;
+const plantingIntroduction = "曙光农场沉香产业从2019年开始发展。依托得天独厚的自然地理条件和电白沉香产业的区域优势，农场抢抓机遇发展奇楠沉香，按照“生态化、标准化、国际化”的方向推进产业建设。目前沉香种植面积超过1万亩，种植株数超过44万株，其中建有2000亩高效种植示范基地。";
+const plantingSections = [
+  { title: "种质资源库建设", paragraphs: ["曙光农场与中国林业科学研究院热带林业研究所（热林所）深度合作，共同建成“优良易结香（奇楠）沉香高效培育技术研究示范基地”暨种质资源圃。", "目前共收集保存了98个沉香优良种质资源，为品种选育、改良和产业化开发奠定了坚实的物质基础。"] },
+  { title: "技术规范标准化", paragraphs: ["在总结多年种植管理经验的基础上，农场于2024年编制并发布企业标准《奇楠沉香种植技术规范》（Q/GDNSGNC 001-2024）。", "该标准对园地选择、种苗质量、定植技术、水肥管理、树体修剪、病虫害绿色防控等环节作出了详细规定，实现了种植管理的标准化、流程化。"] },
+  { title: "结香技术探索", paragraphs: ["在确保树木健康生长的前提下，农场积极试验多种结香技术。除传统人工打孔法外，正与华南农业大学等科研团队合作，试验“物理接菌法”等现代生物诱导技术，探索结香周期更短、结香品质更优、对树木伤害更小的可持续结香路径。"] },
+];
+const parkSections = [
+  { title: "产业源头与种质资源", paragraphs: [plantingIntroduction, ...plantingSections[0].paragraphs] },
+  ...plantingSections.slice(1),
+  { title: "精深加工与应用研发", paragraphs: ["目前已建成25000多平方米的沉香深加工产业园，重点研发方向是沉香提取物在日化、药品等领域的应用，致力于把每一片叶子、每一块木头的价值都发挥到极致。"] },
+  { title: "出口贸易与国际市场", paragraphs: ["企业已通过国家濒危物种进出口管理办公室严格审核，并依法取得出口许可，2025年至2026年带动外汇收入近千万元，展现广东农垦优质农产品的国际竞争力。"] },
+  { title: "品牌建设与未来发展", paragraphs: ["曙光农场将持续贯彻落实广东农垦集团决策部署，深耕国际市场，强化品牌建设与渠道拓展，致力于将广垦沉香打造成具有国际影响力的品牌。"] },
+];
+const industryPhotos = {
+  aerial: { src: "/assets/industry/shuguang-plantation-aerial.jpg", caption: "曙光农场沉香种植基地 · 航拍全景", width: 2275, height: 1279 },
+  station: { src: "/assets/industry/forestry-service-station.jpg", caption: "园区林业服务站", width: 5280, height: 2970 },
+  demonstration: { src: "/assets/industry/efficient-planting-base.jpg", caption: "广垦沉香高效种植示范基地", width: 2275, height: 1279 },
+};
+function IndustryPhoto({ photo, eager = false }: { photo: typeof industryPhotos.aerial; eager?: boolean }) {
+  return <figure className="industry-photo"><img src={photo.src} alt={photo.caption} loading={eager ? "eager" : "lazy"} decoding="async" width={photo.width} height={photo.height} /><figcaption>{photo.caption}</figcaption></figure>;
+}
+function IndustrySections({ sections, plantingPhoto = false }: { sections: typeof plantingSections; plantingPhoto?: boolean }) {
+  return <div className="farm-story-list industry-introduction">{sections.map((section, index) => <section key={section.title}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{section.title}</h3>{section.paragraphs.map((paragraph, paragraphIndex) => <div key={paragraph}><p>{paragraph}</p>{plantingPhoto && index === 0 && paragraphIndex === 0 ? <IndustryPhoto photo={industryPhotos.demonstration} /> : null}</div>)}</div></section>)}</div>;
+}
+const parkMetrics = [["1万", "余亩", "沉香种植面积"], ["44万", "余株", "沉香种植株数"], ["98", "个", "优良种质资源"], ["2.5万", "余㎡", "深加工产业园"]] as const;
+function IndustryMetrics({ items }: { items: ReadonlyArray<readonly [string, string, string]> }) {
+  return <dl className="industry-metrics">{items.map(([value, unit, label]) => <div key={label}><dt>{label}</dt><dd>{value}<span>{unit}</span></dd></div>)}</dl>;
+}
 const selectionItems = [
   { title: "手串收藏", description: "海南沉香 · 温润随身", background: "/assets/home-selection/bracelet-background-v2.png" },
   { title: "香道礼盒", description: "雅集赠礼 · 一盒成礼", background: "/assets/home-selection/gift-background-v2.png" },
   { title: "企业定制", description: "专属定制 · 国企礼赠", background: "/assets/home-selection/custom-background-v2.png" },
   { title: "沉香树认种", description: "一树一档 · 见证生长", background: "/assets/home-selection/tree-background-v2.png" },
 ] as const;
-function IndustrialPark({ keyboard }: { keyboard: ReturnType<typeof useKeyboard> }) {
-  const [playing, setPlaying] = useState(false);
-  const [index, setIndex] = useState(0);
-  const parkRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const carousel = parkRef.current?.querySelector<HTMLElement>(".park-carousel");
-    if (!carousel) return;
-    const update = () => {
-      const slide = carousel.querySelector<HTMLElement>(".park-slide");
-      const gap = Number.parseFloat(getComputedStyle(carousel.querySelector<HTMLElement>(".park-carousel-content")!).gap) || 0;
-      const step = Math.max(1, (slide?.offsetWidth ?? carousel.clientWidth) + gap);
-      setIndex(Math.max(0, Math.min(parkSlides.length - 1, Math.round(carousel.scrollLeft / step))));
-    };
-    carousel.addEventListener("scroll", update, { passive: true });
-    update();
-    return () => carousel.removeEventListener("scroll", update);
-  }, []);
-  return <MobileScroll className="app-screen"><main ref={parkRef} className="screen-content detail-content industrial-park" data-product-doc-page="industrial-park"><p className="page-eyebrow">走进产业园</p><h2>广垦沉香·源头产业园</h2><p className="lead">广东农垦国资国企｜万亩沉香种植基地｜标准化无尘加工车间，全链路品控</p><Carousel ariaLabel="产业园图集" className="park-carousel" contentClassName="park-carousel-content">{parkSlides.map(([image,title,text], i) => <article className="park-slide" key={title} onFocus={() => setIndex(i)}><img src={image} alt={title} /><h3>{title}</h3><p>{text}</p></article>)}</Carousel><div className="park-page-count" aria-live="polite">{index + 1}/{parkSlides.length}</div><button className="park-video-button" aria-label={playing ? "暂停产业园介绍" : "播放产业园介绍"} onClick={() => setPlaying(value => !value)}>{playing ? "暂停产业园介绍 · 00:18 / 01:12" : "播放产业园介绍 · 00:00 / 01:12"}</button>{playing ? <div className="park-video-progress" aria-hidden="true"><span /></div> : null}</main></MobileScroll>;
+function IndustrialPark() {
+  return <MobileScroll className="app-screen"><main className="screen-content detail-content industrial-park industry-editorial" data-product-doc-page="industrial-park">
+    <header className="industry-heading"><p className="page-eyebrow">广东电白 · 曙光农场</p><h2>广垦沉香<br /><em>源头产业园</em></h2><p className="industry-deck">从良种选育到精深加工，<br />走进广垦沉香全产业链。</p></header>
+    <IndustryPhoto photo={industryPhotos.aerial} eager />
+    <IndustryMetrics items={parkMetrics} />
+    <p className="lead">曙光农场立足电白区沉香产业的区域优势，聚焦沉香全产业链建设，统筹推进良种选育、标准化种植、精深加工、品牌培育及线上线下销售，逐步构建“科技支撑、品牌赋能、贸易驱动”的现代沉香产业体系。</p>
+    <IndustryPhoto photo={industryPhotos.station} />
+    <section className="industry-chain" aria-label="沉香全产业链"><h3>全产业链布局</h3><ol>{["良种选育", "标准化种植", "精深加工", "品牌培育", "线上线下销售"].map(label => <li key={label}>{label}</li>)}</ol></section>
+    <IndustrySections sections={parkSections} plantingPhoto />
+    <p className="industry-signature">广东农垦曙光农场有限公司 · 广垦沉香</p>
+  </main></MobileScroll>;
 }
-const industrialParkScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "industrial-park", header: flow => <TopBar title="广垦沉香·源头产业园" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: () => <IndustrialPark keyboard={keyboard} /> });
+const industrialParkScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "industrial-park", header: flow => <TopBar title="广垦沉香·源头产业园" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: () => <IndustrialPark /> });
 
 function Home({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof useKeyboard> }) {
   const { authorized, authorize } = useAuthorization();
@@ -471,7 +484,7 @@ function Home({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof useKe
         <section className="home-park home-park-banner" data-home-section="home-park">
           <div className="home-park-copy">
             <h3>广垦沉香 · 源头产业园</h3>
-            <p><span>广东农垦国资国企｜万亩沉香种植基地</span><span>标准化无尘加工车间，全链路品控</span></p>
+            <p><span>广东电白曙光农场｜万亩种植基地</span><span>良种选育 · 标准化种植 · 精深加工</span></p>
             <button onClick={() => { prepareH5Transition(keyboard); flow.push(industrialParkScreen(keyboard)); }}>走进产业园<ChevronRightIcon aria-hidden="true" /></button>
           </div>
         </section>
@@ -658,22 +671,6 @@ const certificateScreen = (keyboard: ReturnType<typeof useKeyboard>, record: Cer
   headerHeight: 54,
   render: () => <CertificateDetail record={record} />,
 });
-const farmStoryScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
-  id: "farm-story",
-  header: flow => <TopBar title="农垦沉香" back={flow.pop} keyboard={keyboard} />,
-  headerHeight: 54,
-  render: () => <MobileScroll className="app-screen"><main className="screen-content farm-story-content" data-product-doc-page="farm-story">
-    <p className="page-eyebrow">琼南农垦 · 沉香故事</p>
-    <h2>从琼南农垦出发，<br /><em>认识这串沉香。</em></h2>
-    <p className="lead">海南琼南的山林环境、长期种植积淀与产业传承，共同构成这串沉香的产区来处。</p>
-    <div className="farm-story-list">
-      <section><span>01</span><div><h3>产区环境</h3><p>温润海风与山林气候，为沉香生长提供稳定、自然的环境基础。</p></div></section>
-      <section><span>02</span><div><h3>农垦积淀</h3><p>依托长期林业种植与产区管理经验，让沉香产业从土地中持续生长。</p></div></section>
-      <section><span>03</span><div><h3>从林场到手串</h3><p>原料经过选材、制作与质检，才成为可以佩戴、可以追溯的一串沉香。</p></div></section>
-    </div>
-    <p className="farm-story-note">本页介绍品牌与产区背景；本串批次、质检和芯片信息请在“证书与溯源”中查看。</p>
-  </main></MobileScroll>,
-});
 const readingRecordsScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "reading-records", header: flow => <TopBar title="问帖记录" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: flow => <MobileScroll className="app-screen"><main className="screen-content detail-content" data-product-doc-page="reading-records"><p className="page-eyebrow">我的香事</p><h2>每一次问帖，<br /><em>都可以继续。</em></h2><button className="reading-record-row" onClick={() => { prepareH5Transition(keyboard); flow.push(readingRecordDetailScreen(keyboard)); }}><span><strong>新的合作是否适合推进？</strong><small>三天前</small></span><p>先用七天小目标验证合作可靠性。</p><ChevronRightIcon /></button></main></MobileScroll> });
 const readingRecordDetailScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "reading-record-detail", header: flow => <TopBar title="问帖详情" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: flow => <MobileScroll className="app-screen"><main className="screen-content detail-content history-detail-content" data-product-doc-page="reading-record-detail"><p className="page-eyebrow">三天前 · 合作</p><h2>新的合作是否适合推进？</h2><div className="reading-log history-transcript" aria-label="历史问帖对话">{historicalMessages.map(message => <article className={`fortune-message ${message.role}`} key={message.id}><div className="fortune-bubble">{message.role === "agent" ? renderAgentText(message.text) : <p>{message.text}</p>}</div></article>)}</div><button className="primary-action" onClick={() => { prepareH5Transition(keyboard); flow.push(interpretScreen(keyboard)); }}>开启新问帖</button></main></MobileScroll> });
 const chipHelpScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "chip-help", header: flow => <TopBar title="芯片识别说明" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: () => <MobileScroll className="app-screen"><main className="screen-content article-content" data-product-doc-page="chip-help"><p className="page-eyebrow">使用帮助</p><h2>轻触 NFC，<br /><em>识别你的手串。</em></h2><p className="lead">将手机靠近手串芯片，即可打开对应的数字身份与证书信息。</p><div className="help-steps">{[["01", "轻触手串芯片", "将手机 NFC 感应区贴近手串芯片。"], ["02", "识别成功后进入手串首页", "首页会展示本串身份、证书与问帖入口。"], ["03", "识别失败时重新贴近", "保持手机稳定，调整位置后再试一次。"]].map(([number, title, text]) => <section key={title}><span>{number}</span><div><strong>{title}</strong><p>{text}</p></div></section>)}</div><p className="help-note">芯片不会直接开始问帖，只用于识别对应手串。</p></main></MobileScroll> });
@@ -700,7 +697,7 @@ const careScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({
     <aside className="care-reminder"><strong>养护提醒</strong><p>沉香为天然材质，长期佩戴与细心养护，香气会愈发温润雅致。正确养护，亦是与沉香相伴的美好仪式。</p></aside>
   </main></MobileScroll>,
 });
-const knowledgeScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "knowledge", header: flow => <TopBar title="沉香知识" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: flow => <MobileScroll className="app-screen"><main className="screen-content article-content" data-product-doc-page="knowledge"><p className="page-eyebrow">认识沉香</p><h2>从产区开始，<br /><em>认识一块沉香。</em></h2><p className="lead">沉香不是树木本身，而是树体在特定环境下形成的香脂与木质的结合体。</p><div className="knowledge-topic-row"><span>01</span><div><strong>沉香如何形成</strong><p>树体受伤后形成香脂，经过时间与环境共同变化。</p></div></div><div className="knowledge-topic-row"><span>02</span><div><strong>怎样闻香</strong><p>先闻整体，再观察清甜、木质与熟韵的变化。</p></div></div><div className="knowledge-topic-row"><span>03</span><div><strong>常见产区差异</strong><p>不同产区的气候和土壤，会带来各具特色的香气层次。</p></div></div><button className="knowledge-card knowledge-story-link" aria-label="了解琼南农垦故事" onClick={() => { prepareH5Transition(keyboard); flow.push(farmStoryScreen(keyboard)); }}><SewingPinIcon /><div><strong>琼南农垦沉香</strong><p>了解品牌、产区与从林场到手串的故事。</p></div><ChevronRightIcon /></button></main></MobileScroll> });
+const knowledgeScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "knowledge", header: flow => <TopBar title="沉香知识" back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: flow => <MobileScroll className="app-screen"><main className="screen-content article-content" data-product-doc-page="knowledge"><p className="page-eyebrow">认识沉香</p><h2>从产区开始，<br /><em>认识一块沉香。</em></h2><p className="lead">沉香不是树木本身，而是树体在特定环境下形成的香脂与木质的结合体。</p><div className="knowledge-topic-row"><span>01</span><div><strong>沉香如何形成</strong><p>树体受伤后形成香脂，经过时间与环境共同变化。</p></div></div><div className="knowledge-topic-row"><span>02</span><div><strong>怎样闻香</strong><p>先闻整体，再观察清甜、木质与熟韵的变化。</p></div></div><div className="knowledge-topic-row"><span>03</span><div><strong>常见产区差异</strong><p>不同产区的气候和土壤，会带来各具特色的香气层次。</p></div></div></main></MobileScroll> });
 
 const homeScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "home", render: flow => <Home flow={flow} keyboard={keyboard} /> });
 const profileScreen = (keyboard: ReturnType<typeof useKeyboard>): FlowScreen => ({ id: "profile", render: flow => <Profile flow={flow} keyboard={keyboard} /> });

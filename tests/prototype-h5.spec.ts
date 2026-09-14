@@ -258,7 +258,7 @@ test("the source industrial park entry is a compact image-backed banner", async 
   const park = page.locator('[data-home-section="home-park"]');
   await expect(park).toHaveClass(/home-park-banner/);
   await expect(park.getByRole("heading", { name: "广垦沉香 · 源头产业园" })).toBeVisible();
-  await expect(park.getByText("广东农垦国资国企｜万亩沉香种植基地", { exact: true })).toBeVisible();
+  await expect(park.getByText("广东电白曙光农场｜万亩种植基地", { exact: true })).toBeVisible();
   await expect(park.getByRole("button", { name: "走进产业园" })).toBeVisible();
   await expect(park.locator(":scope > img")).toHaveCount(0);
   expect(await park.evaluate(node => getComputedStyle(node).backgroundImage)).not.toBe("none");
@@ -345,14 +345,27 @@ test("certificate download reports success and an unavailable file can be retrie
 
 test("industrial park and knowledge rows open complete destinations", async ({ page }) => {
   await page.getByRole("button", { name: "走进产业园" }).click();
-  const park = page.getByRole("region", { name: "产业园图集" });
-  await expect(park.locator(".park-slide")).toHaveCount(4);
-  await expect(page.locator(".park-page-count")).toHaveText("1/4");
-  await park.evaluate(node => { const element = node as HTMLElement; element.scrollTo({ left: element.clientWidth * 0.82 + 12, behavior: "auto" }); element.dispatchEvent(new Event("scroll")); });
-  await expect(page.locator(".park-page-count")).toHaveText("2/4");
-  await page.getByRole("button", { name: "播放产业园介绍" }).click(); await expect(page.getByRole("button", { name: "暂停产业园介绍" })).toBeVisible();
+  const park = page.getByTestId("flow-current").locator('[data-product-doc-page="industrial-park"]');
+  await expect(park.locator(".industry-metrics > div")).toHaveCount(4);
+  await expect(park.locator(".industry-photo img")).toHaveCount(3);
+  await expect(park).toContainText("2019年");
+  await expect(park).toContainText("生态化、标准化、国际化");
+  await expect(park.getByRole("region", { name: "沉香全产业链" }).getByRole("listitem")).toHaveCount(5);
+  await expect(park.locator(".industry-introduction > section")).toHaveCount(6);
+  await expect(park).toContainText("Q/GDNSGNC 001-2024");
+  await expect(park).toContainText("2025年至2026年带动外汇收入近千万元");
+  await expect(park.locator(".park-carousel, .park-video-button")).toHaveCount(0);
+  const scroll = page.getByTestId("flow-current").getByTestId("mobile-scroll");
+  await scroll.evaluate(node => { node.scrollTop = node.scrollHeight; });
+  await expect(park.locator(".industry-signature")).toBeInViewport();
   await page.getByRole("button", { name: "返回" }).click(); await page.waitForTimeout(350); await page.getByRole("button", { name: "如何快速辨别沉香手串的真假" }).click(); await expect(page.getByRole("heading", { name: "如何快速辨别沉香手串的真假" })).toBeVisible();
   for (const label of ["先闻香味", "再看油脂线", "结合密度与来源"]) await expect(page.getByRole("heading", { name: label, exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "返回", exact: true }).click();
+  await page.getByRole("button", { name: "查看更多知识文章" }).click();
+  const knowledge = page.getByTestId("flow-current").locator('[data-product-doc-page="knowledge"]');
+  await expect(knowledge.locator(".knowledge-topic-row")).toHaveCount(3);
+  await expect(knowledge.getByRole("button")).toHaveCount(0);
+  await expect(knowledge).not.toContainText("产业源头");
 });
 
 test("knowledge rows open display-only WeChat-style articles while care service stays manual", async ({ page }) => {

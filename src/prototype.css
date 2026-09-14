@@ -309,6 +309,36 @@ button { font: inherit; color: inherit; }
 .farm-story-list section > span { color: var(--warm); font: 17px/1 Georgia, serif; }
 .farm-story-list h3 { margin: 0; font-size: 15px; }
 .farm-story-list p { margin: 7px 0 0; color: #687069; font-size: 13px; line-height: 1.75; }
+.industry-editorial { padding: 28px 24px calc(var(--mobile-safe-area-height) + 36px); background: #f8f7f2; }
+.industry-heading { padding-bottom: 25px; }
+.industry-heading .page-eyebrow { margin: 0 0 18px; color: #886747; font-size: 12px; letter-spacing: .1em; }
+.industry-heading h2 { margin: 0 0 17px; font-size: 32px; line-height: 1.45; }
+.industry-deck { margin: 0; color: #616a61; font-size: 14px; line-height: 1.85; }
+.industry-photo { margin: 24px 0; }
+.industry-photo img { display: block; width: 100%; height: auto; border-radius: 4px; }
+.industry-photo figcaption { margin-top: 9px; color: #788172; font-size: 11px; line-height: 1.6; }
+.industry-heading + .industry-photo { margin: 0 -24px 26px; }
+.industry-heading + .industry-photo img { border-radius: 0; }
+.industry-heading + .industry-photo figcaption { padding: 0 24px; }
+.industry-introduction .industry-photo { margin: 18px 0; }
+.industry-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 0 26px; padding: 6px 0; background: #eef1e9; border-top: 2px solid #254f3b; border-bottom: 1px solid #d9dfd2; }
+.industry-metrics > div { display: flex; flex-direction: column; gap: 7px; padding: 17px 14px; }
+.industry-metrics > div:nth-child(odd) { border-right: 1px solid #d9dfd2; }
+.industry-metrics > div:nth-child(-n+2) { border-bottom: 1px solid #d9dfd2; }
+.industry-metrics dt { order: 1; color: #626c5f; font-size: 12px; }
+.industry-metrics dd { margin: 0; color: #244b37; font: 500 30px/1.15 "Songti SC", "STSong", serif; white-space: nowrap; }
+.industry-metrics dd span { margin-left: 5px; font: 400 12px/1.5 system-ui, sans-serif; }
+.industry-editorial .lead, .industry-introduction p { color: #505c52; font-size: 15px; line-height: 1.9; overflow-wrap: anywhere; }
+.industry-introduction { margin-top: 26px; }
+.industry-introduction section { grid-template-columns: 24px minmax(0, 1fr); gap: 10px; padding: 24px 0; }
+.industry-introduction h3 { color: #254b37; font-size: 18px; line-height: 1.4; }
+.industry-introduction section > span { padding-top: 4px; font-size: 15px; }
+.industry-introduction p { margin-top: 12px; }
+.industry-chain { margin: 26px 0; padding: 20px 0; border-top: 1px solid #d9dfd2; border-bottom: 1px solid #d9dfd2; }
+.industry-chain h3 { margin: 0 0 14px; color: #254b37; font-size: 15px; }
+.industry-chain ol { display: flex; flex-wrap: wrap; gap: 10px 0; margin: 0; padding: 0; list-style: none; color: #596650; font-size: 13px; line-height: 1.7; }
+.industry-chain li:not(:last-child)::after { content: "→"; padding: 0 8px; color: #8a946f; }
+.industry-signature { margin: 28px 0 0; color: #7a806f; font-size: 11px; text-align: center; line-height: 1.7; }
 .farm-story-note { margin: 20px 0 0; padding: 14px 15px; border-left: 2px solid var(--green); background: var(--green-soft); color: #5f6962; font-size: 12px; line-height: 1.7; }
 .help-steps { border-top: 1px solid var(--line); }
 .help-steps section { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 17px 0; border-bottom: 1px solid var(--line); }
