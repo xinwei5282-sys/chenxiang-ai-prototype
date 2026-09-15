@@ -1119,7 +1119,7 @@ test("product document follows the active page and gives the login layer precede
   await page.getByRole("button", { name: "关闭 PRD", exact: true }).first().click();
   await page.getByRole("button", { name: "返回" }).click();
 
-  await page.getByRole("button", { name: "沉香知识" }).click();
+  await page.getByRole("button", { name: "查看更多知识文章" }).click();
   await trigger.click();
   await expect(drawer.getByRole("heading", { name: "沉香知识 · 页面 PRD", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "关闭 PRD", exact: true }).first().click();
@@ -1178,4 +1178,56 @@ test("product document drawer navigates, closes, and leaves the phone operable",
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
   await expect(trigger).toBeFocused();
+});
+
+
+for (const device of ["iphone", "pixel-10"]) {
+  test(`provenance replaces knowledge with the six source stages on ${device}`, async ({ page }) => {
+    test.setTimeout(40000);
+    await page.getByTestId("device-picker").click();
+    await page.getByTestId(`device-option-${device}`).click();
+    const services = page.locator('[data-home-section="home-services"]');
+    await expect(services.locator("strong")).toHaveText(["证书查询", "佩戴养护", "防伪溯源", "认种沉香树"]);
+    await page.getByTestId("home-provenance-link").click();
+    const current = page.getByTestId("flow-current");
+    const detail = current.locator(".provenance-detail");
+    await expect(detail).toContainText("GKCX-20260915");
+    await expect(detail.getByText("原型演示数据 · 芯片 UID 待补充", { exact: true })).toHaveCount(0);
+    await expect(detail.locator(".provenance-stage h3")).toHaveText(["种苗培育", "种植管理", "打孔造香", "采收取香", "精工淳化", "成品成串"]);
+    await expect.poll(() => current.evaluate(el => Math.abs(new DOMMatrix(getComputedStyle(el).transform).m41))).toBeLessThan(0.1);
+    await page.addStyleTag({ content: ".mobile-cursor { display:none !important; }" });
+    await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-restored-2026-09-15/${device}.png` });
+    for (const [index, expected] of [[0, "GK-YM-2018-03"], [1, "担杆岭"], [2, "2023 年 6 月"], [3, "温国波"], [4, "约 90 天"], [5, "2026 年 9 月 10 日"]] as const) {
+      const stage = detail.locator(".provenance-stage").nth(index);
+      await expect(stage.locator("details, summary")).toHaveCount(0);
+      await stage.locator("dl").scrollIntoViewIfNeeded();
+      await expect(stage.locator("dl")).toBeVisible();
+      await expect(stage.locator("dl")).toContainText(expected);
+      if (index === 2 || index === 5) await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-restored-2026-09-15/${device}-stage-${index + 1}.png` });
+
+    }
+    for (const photo of await detail.locator("img").all()) {
+      await photo.scrollIntoViewIfNeeded();
+      await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)).toBe(true);
+    }
+    expect(await detail.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
+    await expect(current.getByRole("button", { name: "查看本串证书", exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: "返回", exact: true }).click();
+    await expect(page.getByTestId("home-provenance-link")).toBeVisible();
+    await page.getByRole("button", { name: "查看更多知识文章" }).click();
+    await expect(page.getByRole("heading", { name: "沉香知识", exact: true })).toBeVisible();
+  });
+}
+
+test("certificate details omit provenance links for present and missing originals", async ({ page }) => {
+  await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
+  await page.getByRole("button", { name: "本串证书" }).click();
+  for (const name of ["奇楠沉香算盘珠手串", "琼南蜜韵沉香手串", "岭南雅韵沉香手串"]) {
+    const current = page.getByTestId("flow-current");
+    await current.getByRole("button", { name: new RegExp(name) }).click();
+    await expect(current.locator(".material-certificate-detail")).toContainText(name);
+    await expect(current.getByRole("button", { name: "查看防伪溯源", exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: "返回", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "我的手串", exact: true })).toBeVisible();
+  }
 });
