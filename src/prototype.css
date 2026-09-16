@@ -96,7 +96,7 @@ button { font: inherit; color: inherit; }
 .home-hero-copy { position: absolute; z-index: 2; top: calc(var(--home-top-safe) + 58px); left: 18px; width: 164px; display: flex; flex-direction: column; align-items: flex-start; color: #074d3b; text-align: left; pointer-events: none; }
 .home-hero-logo { width: 116px; height: auto; margin-bottom: 8px; object-fit: contain; }
 .home-hero-title { font: 800 25px/1.24 "Songti SC", "STSong", serif; letter-spacing: .03em; }
-.home-hero-subtitle { margin-top: 6px; color: #4e4c46; font-size: 12px; line-height: 1.2; letter-spacing: .3em; white-space: nowrap; }
+.home-hero-subtitle { margin-top: 6px; color: #4e4c46; font-size: 12px; line-height: 1.6; letter-spacing: .3em; white-space: nowrap; }
 .home-selection { margin: 14px 10px 0; padding: 14px 16px 12px; border: 0; border-radius: 14px; background: #fff; box-shadow: none; }
 .selection-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 2px 12px; }
 .selection-heading > span { min-width: 0; }

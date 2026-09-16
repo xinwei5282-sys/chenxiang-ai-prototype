@@ -530,8 +530,8 @@ function BraceletHero({ onOpen }: { onOpen: () => void }) {
     <img className="bracelet-hero-photo" src="/assets/home-reference/hero-boy-banner.png" alt="广垦沉香男孩手持沉香手串" />
     <span className="home-hero-copy">
       <img className="home-hero-logo" src="/assets/home-reference/guangken-chenxiang-logo.png" alt="广垦沉香 Logo" />
-      <span className="home-hero-title" role="heading" aria-level={1} aria-label="海南琼南沉香手串">海南琼南<br />沉香手串</span>
-      <span className="home-hero-subtitle">清甜木香 · 海南沉香</span>
+      <span className="home-hero-title" role="heading" aria-level={1} aria-label="中国香，世界礼">中国香，<br />世界礼</span>
+      <span className="home-hero-subtitle">不仅是香，<br />更是身心治愈师</span>
     </span>
   </button>;
 }
