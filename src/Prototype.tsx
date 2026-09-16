@@ -530,7 +530,7 @@ function BraceletHero({ onOpen }: { onOpen: () => void }) {
     <img className="bracelet-hero-photo" src="/assets/home-reference/hero-boy-banner.png" alt="广垦沉香男孩手持沉香手串" />
     <span className="home-hero-copy">
       <img className="home-hero-logo" src="/assets/home-reference/guangken-chenxiang-logo.png" alt="广垦沉香 Logo" />
-      <span className="home-hero-title" role="heading" aria-level={1} aria-label="中国香 世界礼">中国香<span className="home-hero-title-second"><svg className="home-hero-cloud" viewBox="0 0 48 34" fill="none" aria-hidden="true"><path d="M11 25C2 25 2 13 10 12C9 3 22 1 27 9C34 3 43 10 39 17C48 16 49 27 40 28H22C16 28 16 32 22 32H31" /><path d="M12 21C6 17 13 11 18 15C22 19 17 23 15 19M28 21C23 17 29 12 33 16C36 19 33 23 29 23H22" /></svg><span>世界礼</span></span></span>
+      <span className="home-hero-title" role="heading" aria-level={1} aria-label="中国香 世界礼">中国香<span className="home-hero-title-second"><img className="home-hero-cloud" src="/assets/home-reference/cloud-gold-selected.png" alt="" aria-hidden="true" /><span>世界礼</span></span></span>
       <span className="home-hero-subtitle">不仅是香，更是身心治愈师</span>
     </span>
   </button>;
