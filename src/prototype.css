@@ -94,7 +94,7 @@ button { font: inherit; color: inherit; }
 .home-root-screen .home-reference-hero { position: relative; height: auto; aspect-ratio: 853 / 1250; display: block; grid-template-rows: none; overflow: hidden; }
 .home-root-screen .home-reference-hero .bracelet-hero-photo { position: absolute; top: 0; bottom: 0; left: 0; width: calc(100% + 18px); max-width: none; height: 100%; aspect-ratio: auto; object-fit: cover; object-position: 50% 0%; }
 .home-hero-copy { position: absolute; z-index: 2; top: calc(var(--home-top-safe) + 58px); left: 18px; width: max-content; display: flex; flex-direction: column; align-items: stretch; color: #074d3b; text-align: left; pointer-events: none; }
-.home-hero-logo { width: 116px; height: auto; margin-bottom: 8px; object-fit: contain; }
+.home-hero-logo { width: 116px; height: auto; margin-bottom: 8px; object-fit: contain; transform: translateY(-16px); }
 .home-hero-title { font: 800 25px/1.24 "Songti SC", "STSong", serif; letter-spacing: .03em; }
 .home-hero-title-second { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
 .home-hero-title-second > span { margin-right: -.03em; white-space: nowrap; }
