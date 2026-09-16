@@ -531,7 +531,7 @@ function BraceletHero({ onOpen }: { onOpen: () => void }) {
     <span className="home-hero-copy">
       <img className="home-hero-logo" src="/assets/home-reference/guangken-chenxiang-logo.png" alt="广垦沉香 Logo" />
       <span className="home-hero-title" role="heading" aria-level={1} aria-label="中国香 世界礼">中国香<span className="home-hero-title-second">世界礼</span></span>
-      <span className="home-hero-subtitle">不仅是香更是身心治愈师</span>
+      <span className="home-hero-subtitle">不仅是香，更是身心治愈师</span>
     </span>
   </button>;
 }
