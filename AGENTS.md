@@ -146,3 +146,28 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 - Source content is Guangdong Dianbai Shuguang Farm. All source and park content, including all three approved photos, belongs under homepage `走进产业园` (`industrial-park`). Remove the knowledge-page source entry and the separate `farm-story` route. Bracelet and certificate records remain independent. Preserve supplied figures and distinguish experimental induction techniques and extract R&D from completed outcomes.
 
 - Provenance display refinement (2026-09-15): show all detailed data by default without expand/collapse controls. Remove the top `原型演示数据 · 芯片 UID 待补充` hint; center each photo caption beneath its own image. Retain missing field values within the stage data and the documented prototype data boundary.
+
+## Selection content and homepage park photo (2026-09-18)
+
+- Homepage `企业定制` opens `enterprise-custom`, using the approved source `reference/enterprise-custom-selected-2026-09-18.png` (generated source: `/Users/xinwei/.codex/generated_images/01a0b3bd-9abc-7bc3-a770-4dcde69301ab/exec-f5d7edaf-5414-4999-b802-6aa4f01bd718.png`) as the visual source of truth. Use an ivory/deep-green/copper editorial page: a green gift-box product hero on the right with live text on the left, `广垦沉香甄选 / 企业定制 / 以香为礼，让心意更有分量 / 传承自然香韵，助力企业传递真挚情谊`. Below, render `六步定制流程` as native text in two columns × three rows, reading order 01–06, with the original descriptions: `需求沟通`（确认预算、品类与采购周期）, `方案设计`（提供产品组合与定制方案）, `报价确认`（明确单价、数量与交付周期）, `打样制作`（按需求制作样品并确认）, `批量生产`（车间有序排产，严控品质）, `交付售后`（完成包装、发货与跟进服务）. Add a pale botanical service band with `专属顾问 一对一服务` and `团购采购/节日礼品/企业伴手礼`. Do not flatten text into an image or expose a poster button/viewer.
+- Homepage `香道礼盒` opens `incense-gift`, a product-led page using the same ivory/deep-green/copper visual system. Use the existing copy `广垦香礼，好运香伴`, a product hero image, the actual unchanged QR code cropped from the original poster with the native label `微信扫码`, and native gift scenarios such as `团购采购/节日礼品/企业伴手礼`. Do not expose an original-poster viewer, zoom action, or poster action; do not regenerate the QR code. These two entries supersede the previous coming-soon-only rule. Both pages are anonymously readable and must fit completely within one default iPhone and Pixel viewport, including fixed title/back controls and the bottom safe area; preserve proportional hero images, hero-image retry, and return to the homepage with its browsing position restored. Do not invent checkout, contact, or API behavior.
+- Homepage `源头产业园` uses the supplied `工厂正面图.jpg` (`public/assets/customer-feedback/factory-front.jpg`). Preserve the original compact background-image card layout, dimensions, and text positions; use the composition-adjusted `public/assets/customer-feedback/park-factory-banner-v2.png`, derived from the supplied factory photo and the original banner reference. The complete factory sits at the right with ivory space for live text at the left; preserve the 371 × 133 iPhone card geometry. Keep the unedited source at `factory-front.jpg`. The industrial-park detail page retains its existing approved photos and content.
+
+## Industry section photos and research partners (2026-09-18)
+
+- Append the supplied `示范基地牌.jpg` after the final paragraph of `01 产业源头与种质资源`, preserving the pre-existing planting photograph after its first paragraph.
+- Append `研究所.png` at the end of `技术规范标准化`, and `校企合作.png` at the end of `结香技术探索`.
+- The exploration paragraph names `华南农业大学、茂名农林学院等科研团队`. Preserve the experimental status of the technical claims.
+- Append `出口图片.jpg` at the end of `出口贸易与国际市场`, preserving the full vertical composite.
+- All four additions use the existing inline photo style, complete original proportions, factual captions, and alt text. No homepage/banner changes are included in this update.
+
+## Industry alignment and planting-management photo (2026-09-18)
+
+- Center the industrial-park page headings, inline photographs and their captions; retain paragraph reading alignment.
+- Append the supplied automatic weather-station photograph to the existing `种植管理` photo carousel on P-17, after the aerial and tree-label photographs. Caption: `自动气象监测站`. Preserve the complete station image and existing bracelet-scoped traceability behavior.
+
+- Remove the visible `即将上线` action beside the homepage selection heading and the badge above the shared Mall tab; preserve existing entry click behavior.
+
+## Question starter wording (2026-09-18)
+
+- Use `工作思考 / 人际沟通 / 自我成长` as the three question starters. Their submitted examples guide practical reflection, communication and personal planning; do not restore career/relationship/wealth fortune prompts. Use `正在思考` for the waiting state, and neutral context-gathering questions after any starter. Preserve the existing layout, text-only interaction and disclaimer.

@@ -709,7 +709,7 @@ button { font: inherit; color: inherit; }
 .device-screen[data-device="pixel-10"] .collection-seal { width: 40px; height: 40px; font-size: 24px; }
 .home-park, .home-knowledge { margin: 14px 10px 0; border-radius: 18px; }
 .home-knowledge { overflow: hidden; padding: 10px 16px 6px; background: #fff; box-shadow: 0 5px 16px rgba(73, 54, 31, .06); }
-.home-park-banner { position: relative; min-height: 120px; overflow: hidden; padding: 16px; border: 1px solid #e5ddd0; border-radius: 14px; background-color: #f8f5ef; background-image: url("/assets/customer-feedback/park-banner-background.png"); background-repeat: no-repeat; background-position: center; background-size: cover; box-shadow: 0 6px 18px rgba(64, 50, 31, .08); }
+.home-park-banner { position: relative; min-height: 120px; overflow: hidden; padding: 16px; border: 1px solid #e5ddd0; border-radius: 14px; background-color: #f8f5ef; background-image: url("/assets/customer-feedback/park-factory-banner-v2.png"); background-repeat: no-repeat; background-position: right center; background-size: 100% 100%; box-shadow: 0 6px 18px rgba(64, 50, 31, .08); }
 .home-park-copy { position: relative; z-index: 1; width: 66%; display: flex; flex-direction: column; align-items: flex-start; }
 .home-park-copy h3 { margin: 0; color: #242c27; font: 600 15px/1.25 "Songti SC", "STSong", serif; }
 .home-park-copy p { margin: 7px 0 8px; color: #4d554f; font-size: 9px; line-height: 1.5; }
@@ -800,3 +800,65 @@ button { font: inherit; color: inherit; }
 .provenance-stage-data h4 { margin: 14px 0 4px; font-size: 13px; font-weight: 500; color: #31553f; }
 .provenance-stage-data .certificate-fields { margin: 0; }
 .provenance-stage-data .certificate-fields dd { overflow-wrap: anywhere; }
+
+/* Selection detail pages share the ivory, green and copper editorial language. */
+.selection-detail-scroll { background: #f8f7f2; }
+.selection-detail-scroll .mobile-scroll-content { height: 100%; }
+.selection-detail-page { display: flex; flex-direction: column; height: 100%; min-height: 0; padding: 18px 24px calc(var(--mobile-safe-area-height) + 12px); background: #f8f7f2; color: #244c3b; }
+.selection-detail-heading { flex: 0 0 auto; text-align: center; }
+.selection-detail-eyebrow { margin: 0 0 10px; color: #8b6b48; font-size: 11px; letter-spacing: .1em; }
+.selection-detail-heading h2 { margin: 0; color: #244c3b; font: 600 28px/1.3 "Songti SC", "STSong", serif; letter-spacing: .04em; }
+.selection-detail-heading h2 em { font-style: normal; }
+.selection-detail-deck { margin: 10px 0 0; color: #687166; font-size: 13px; line-height: 1.7; }
+/* Approved enterprise design: product hero, two-column process, botanical service band. */
+.selection-detail-page.enterprise-custom { padding: 0 0 calc(var(--mobile-safe-area-height) + 12px); background: #faf9f5; }
+.customization-hero { position: relative; flex: 1 1 0; min-height: 210px; overflow: hidden; }
+.customization-hero > img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: right bottom; }
+.customization-hero-copy { position: absolute; top: 24px; left: 24px; right: 16px; }
+.customization-hero-eyebrow { margin: 0; color: #967047; font-size: 11px; line-height: 1.4; letter-spacing: .1em; }
+.customization-hero-eyebrow::after { content: ""; display: block; width: 20px; height: 1px; margin-top: 12px; background: #a68051; }
+.customization-hero-copy h2 { margin: 12px 0 8px; color: #133f30; font: 600 38px/1.25 "Songti SC", "STSong", serif; letter-spacing: .04em; }
+.customization-hero-tagline { margin: 0; color: #1e4837; font: 600 13px/1.6 "Songti SC", "STSong", serif; }
+.customization-hero-description { margin: 16px 0 0; color: #74786a; font-size: 12px; line-height: 1.8; letter-spacing: .05em; }
+.customization-process { flex: 0 0 auto; padding: 12px 22px 0; }
+.customization-process > header { text-align: center; }
+.customization-process > header h2 { display: flex; align-items: center; gap: 12px; margin: 0; color: #173f30; font: 600 23px/1.4 "Songti SC", "STSong", serif; }
+.customization-process > header h2::before, .customization-process > header h2::after { content: ""; height: 1px; background: #ac8858; flex: 1; }
+.customization-process > header p { margin: 7px 0 0; color: #737d6c; font-size: 12px; line-height: 1.6; }
+.customization-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; list-style: none; margin: 8px 0 0; padding: 0; }
+.customization-steps li { display: grid; grid-template-columns: 29px minmax(0,1fr); align-content: start; column-gap: 10px; min-width: 0; padding: 12px 0; border-bottom: 1px solid #deded4; }
+.customization-steps li:nth-last-child(-n+2) { border-bottom: 0; }
+.customization-step-number { color: #aa8150; font: 25px/1.1 Georgia, serif; }
+.customization-steps li > div { padding-left: 9px; border-left: 1px solid #d3c9b6; }
+.customization-steps h3 { margin: 0 0 5px; color: #244c3b; font: 600 17px/1.35 "Songti SC", "STSong", serif; }
+.customization-steps p { margin: 0; color: #72776b; font-size: 12px; line-height: 1.5; }
+.customization-service { flex: 0 0 auto; margin: 6px 12px 0; padding: 14px 10px; overflow: hidden; border: 0; border-radius: 12px; background: #edf0e7 url("/assets/customer-feedback/enterprise-custom-service.png") center / cover no-repeat; text-align: center; }
+.customization-service h3 { margin: 0; color: #224736; font: 600 18px/1.4 "Songti SC", "STSong", serif; }
+.customization-service h3::after { content: ""; display: block; width: 20px; height: 1px; margin: 9px auto 0; background: #a58051; }
+.customization-service ul { display: flex; justify-content: center; margin: 10px 0 0; padding: 0; list-style: none; color: #737a6a; font-size: 11px; }
+.customization-service li + li::before { content: "·"; margin: 0 8px; color: #ac9478; }
+.enterprise-custom .selection-detail-signature { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 24px 0; font-size: 10px; }
+.enterprise-custom .selection-detail-signature::before, .enterprise-custom .selection-detail-signature::after { content: ""; height: 1px; width: 44px; background: #d4d2c7; }
+.selection-gift-visual { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; margin: 12px -24px 0; }
+.selection-gift-visual img { display: block; flex: 1 1 0; min-height: 0; width: 100%; height: 0; object-fit: contain; }
+.selection-gift-visual figcaption { flex: 0 0 auto; margin: 8px 24px 0; color: #8b795f; font: 14px/1.6 "Songti SC", "STSong", serif; letter-spacing: .12em; text-align: center; }
+.selection-detail-signature { flex: 0 0 auto; margin: 12px 0 0; color: #92988a; font-size: 10px; letter-spacing: .08em; text-align: center; }
+.selection-poster-error { padding: 32px 20px; text-align: center; color: #73806a; }
+.selection-poster-error button { min-height: 44px; padding: 0 20px; border: 1px solid #cbd2cc; border-radius: 6px; background: #f8f7f2; color: #244c3b; }
+
+/* Park article alignment and the complete planting-management weather-station photo. */
+.industry-editorial h2, .industry-editorial h3, .industry-editorial .industry-photo figcaption { text-align: center; }
+.industry-editorial .industry-photo img { margin-inline: auto; }
+.provenance-photos img.provenance-photo-contain { object-fit: contain; }
+
+.selection-gift-occasions { flex: 0 0 auto; display: flex; justify-content: center; gap: 0; margin: 12px 0 16px; padding: 0; list-style: none; font-size: 11px; color: #717a68; }
+.selection-gift-occasions li + li::before { content: "·"; margin: 0 10px; color: #aa8d66; }
+.selection-gift-contact { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 148px; align-items: center; gap: 14px; padding: 12px 16px; background: #edf0e7; border-top: 1px solid #d9dfd1; border-bottom: 1px solid #d9dfd1; }
+.selection-gift-contact p { margin: 0 0 10px; color: #9a744b; font-size: 11px; letter-spacing: .12em; }
+.selection-gift-contact h3 { margin: 0; color: #244c3b; font: 600 21px/1.5 "Songti SC", "STSong", serif; }
+.selection-gift-contact span { display: block; margin-top: 14px; color: #66725e; font-size: 12px; }
+.gift-qr-frame { padding: 8px; background: #fff; }
+.gift-qr-viewport { position: relative; width: 132px; height: 132px; overflow: hidden; background: #fff; }
+.gift-qr-viewport .gift-qr-source { position: absolute; width: 1049%; max-width: none; height: auto; left: -708%; top: -409.5%; }
+.gift-qr-viewport .selection-poster-error { padding: 5px; font-size: 11px; }
+.gift-qr-viewport .selection-poster-error button { padding: 0 8px; }

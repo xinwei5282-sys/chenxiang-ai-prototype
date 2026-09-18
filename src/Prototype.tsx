@@ -100,6 +100,10 @@ const provenanceStages = [
       [
         "image5.jpeg",
         "种植林与树木挂牌"
+      ],
+      [
+        "automatic-weather-station.jpg",
+        "自动气象监测站"
       ]
     ]
   },
@@ -302,6 +306,16 @@ const productDocPages = {
     flowHeadings: ["FLOW-06 藏品档案与电子证书"], stateHeadings: [], requirementPrefixes: ["FR-COLLECTION-", "FR-CERT-"],
     apiHeadings: ["`GET /v1/bracelets/{bracelet_id}`", "`GET /v1/certificates/{certificate_id}`"], acceptancePrefixes: ["AC-COLLECTION-", "AC-ERROR-"],
   },
+  "enterprise-custom": {
+    label: "P-18 企业定制", guideHeading: "DOC-P-18 企业定制", specHeading: "P-18 企业定制",
+    flowHeadings: ["FLOW-07 内容阅读"], stateHeadings: [], requirementPrefixes: ["FR-CONTENT-"],
+    apiHeadings: ["`GET /v1/content/{content_key}`"], acceptancePrefixes: ["AC-CONTENT-"],
+  },
+  "incense-gift": {
+    label: "P-19 香道礼盒", guideHeading: "DOC-P-19 香道礼盒", specHeading: "P-19 香道礼盒",
+    flowHeadings: ["FLOW-07 内容阅读"], stateHeadings: [], requirementPrefixes: ["FR-CONTENT-"],
+    apiHeadings: ["`GET /v1/content/{content_key}`"], acceptancePrefixes: ["AC-CONTENT-"],
+  },
   "industrial-park": {
     label: "P-15 源头产业园", guideHeading: "DOC-P-15 源头产业园", specHeading: "P-15 源头产业园",
     flowHeadings: ["FLOW-07 内容阅读"], stateHeadings: [], requirementPrefixes: ["FR-PARK-", "FR-CONTENT-"],
@@ -317,10 +331,15 @@ const productDocPages = {
 type ProductDocPageKey = keyof typeof productDocPages;
 
 type PagePrd = { goal: string; roles: string; entry: string; permission: string; rules: string[]; fields: [string, string, string, string][]; actions: [string, string, string, string][]; boundary: string; states: string; logs: string; empty: string; acceptance: string[]; tech: string[] };
+function posterPagePrd(title: string, content: string): PagePrd {
+  return { goal: `以统一的米白、深绿和棕金风格展示${title}内容。`, roles: "所有访客", entry: `首页广垦沉香甄选 → ${title}`, permission: "匿名可读", rules: ["企业定制按已确认效果稿展示右侧礼盒主视觉、左侧真实文案，六步流程为两列三行，底部为植物纹理顾问服务区与三类适用场景。", "香道礼盒展示产品主图、品牌文案与礼赠场景，并直接展示原宣传图中的微信二维码。", "两个页面在默认 iPhone 与 Pixel 上一屏完整展示，底部避让安全区，均不提供完整海报查看或放大入口。"], fields: [["页面标题", "文本", "必显", title], ["页面内容", "图文", "必显", content], ["微信二维码", "原图局部展示", "仅香道礼盒显示", "使用原海报真实二维码，不生成、不改写码内容"]], actions: [["返回", "详情页", "回到首页原浏览位置", "无业务写操作"], ["重新加载", "图片失败时", "重新加载产品图或二维码原图", "匿名可用"]], boundary: "仅展示客户宣传内容，不创建下单、付款或咨询提交接口。产品主图依据原宣传图整理；二维码目的地由原始素材决定。", states: "首页入口→品牌详情页→返回首页；图片失败→重试。", logs: "生产接入时记录详情曝光与图片加载失败。", empty: "图片加载失败显示提示及重新加载按钮。", acceptance: ["六步流程文案完整，礼盒主视觉与整站风格一致。", "没有查看海报入口，礼盒二维码独立完整展示。", "返回恢复首页浏览位置，页面 PRD 与当前页面对应。"], tech: ["复用 FlowStack、MobileScroll；以原宣传图局部视口展示二维码，不重绘码点。"] };
+}
 const pagePrdDefaults: Record<ProductDocPageKey, PagePrd> = {
-  home: { goal: "以广垦沉香品牌内容建立信任，并让用户进入问帖、手串藏品、证书、养护、知识、外部认种小程序和产业园。", roles: "匿名用户和已授权用户", entry: "芯片识别成功；根导航首页；小程序常规入口", permission: "品牌、证书与内容匿名可读；问帖和个人记录需微信授权", rules: ["页面按品牌主视觉、AI 问帖、广垦甄选、我的藏品、四项服务、源头产业园、沉香小知识和版权顺序纵向滚动。", "首页证书服务直达当前手串；我的证书数量先进入手串列表。", "商城与甄选入口本期只提示即将上线；认种沉香树直接跳转外部认种小程序，不建设内部认种档案。"], fields: [["品牌主视觉", "图文 Banner", "首屏必显", "展示广垦沉香 Logo、海南琼南沉香手串与品牌画面"],["AI 问帖主入口", "按钮", "必显", "文案为开始问帖，每次进入新对话"],["广垦沉香甄选", "商品预告", "固定展示", "展示四项甄选内容，点击只提示即将上线"],["我的藏品", "单个手串卡片", "有演示数据展示", "仅展示海南琼南沉香手串，可进手串档案或下载电子证书"],["服务入口", "四项宫格", "固定展示", "证书查询、佩戴养护、防伪溯源、认种沉香树"],["源头产业园", "图文入口", "固定展示", "进入四图图集与模拟视频"],["沉香小知识", "文章列表", "两篇固定展示", "分别进入公众号式纯展示文章"],["公司版权", "页脚文本", "页面末尾展示", "展示运营主体，不承载操作"]], actions: [["开始问帖", "始终展示", "未授权打开登录确认层；已授权创建新对话", "记录入口来源和 pending_intent"],["查看证书查询", "当前手串有效", "直达当前手串证书详情", "记录 bracelet_id"],["查看藏品", "手串藏品存在", "进入对应手串档案", "记录 collection_id"],["认种沉香树", "始终展示", "跳转外部认种小程序", "生产使用 wx.navigateToMiniProgram 并记录成功或失败"],["佩戴养护 / 沉香知识", "内容可用", "进入对应内容页", "匿名可用，记录 content_key"],["走进产业园", "固定展示", "进入产业园图集与视频页", "记录内容曝光与播放"]], boundary: "本页不建设交易闭环或内部认种档案；认种商品、记录、证书和交易归属外部小程序。AI 只作传统文化角度参考，不作鉴定、医疗、法律、财务或投资承诺。", states: "页面加载→分模块成功/失败；开始问帖→授权确认/新对话；商城入口→即将上线提示；认种入口→外部小程序/失败留在首页重试。", logs: "记录 scan_token、页面曝光、模块点击、下载结果、外部小程序跳转结果和错误码；未授权时不记录个人身份。", empty: "单个模块失败不阻塞其他模块；无手串上下文时隐藏直达证书并提供重新识别；外部认种小程序无法打开时留在首页并提示重试。", acceptance: ["模块顺序与已确认首页一致，底部导航不遮挡版权。", "未授权点击问帖先进入微信授权确认，成功后恢复问帖意图。", "认种沉香树不进入内部档案，原型提示正在打开外部小程序并保持首页。"], tech: ["识别结果与 current_bracelet_id 必须绑定。", "生产认种入口使用可配置 AppID 和路径调用 wx.navigateToMiniProgram。", "模块接口独立降级，图片需有替代文本和缓存策略。"] },
+  "enterprise-custom": posterPagePrd("企业定制", "企业定制流程：需求沟通、方案设计、报价确认、打样制作、批量生产、交付售后。"),
+  "incense-gift": posterPagePrd("香道礼盒", "广垦香礼，好运香伴：礼盒产品、活动文案及原图二维码。"),
+  home: { goal: "以广垦沉香品牌内容建立信任，并让用户进入问帖、手串藏品、证书、养护、知识、外部认种小程序和产业园。", roles: "匿名用户和已授权用户", entry: "芯片识别成功；根导航首页；小程序常规入口", permission: "品牌、证书与内容匿名可读；问帖和个人记录需微信授权", rules: ["页面按品牌主视觉、AI 问帖、广垦甄选、我的藏品、四项服务、源头产业园、沉香小知识和版权顺序纵向滚动。", "首页证书服务直达当前手串；我的证书数量先进入手串列表。", "企业定制与香道礼盒打开品牌详情页，礼盒页直接展示微信二维码；其余商城与甄选入口保留即将上线提示；认种沉香树直接跳转外部认种小程序，不建设内部认种档案。"], fields: [["品牌主视觉", "图文 Banner", "首屏必显", "展示广垦沉香 Logo、海南琼南沉香手串与品牌画面"],["AI 问帖主入口", "按钮", "必显", "文案为开始问帖，每次进入新对话"],["广垦沉香甄选", "商品预告", "固定展示", "展示四项甄选内容；企业定制与香道礼盒进入品牌详情，其余入口保留原行为"],["我的藏品", "单个手串卡片", "有演示数据展示", "仅展示海南琼南沉香手串，可进手串档案或下载电子证书"],["服务入口", "四项宫格", "固定展示", "证书查询、佩戴养护、防伪溯源、认种沉香树"],["源头产业园", "图文入口", "固定展示", "工厂正面图作为首页封面，进入产业园图文介绍"],["沉香小知识", "文章列表", "两篇固定展示", "分别进入公众号式纯展示文章"],["公司版权", "页脚文本", "页面末尾展示", "展示运营主体，不承载操作"]], actions: [["开始问帖", "始终展示", "未授权打开登录确认层；已授权创建新对话", "记录入口来源和 pending_intent"],["查看证书查询", "当前手串有效", "直达当前手串证书详情", "记录 bracelet_id"],["查看藏品", "手串藏品存在", "进入对应手串档案", "记录 collection_id"],["认种沉香树", "始终展示", "跳转外部认种小程序", "生产使用 wx.navigateToMiniProgram 并记录成功或失败"],["佩戴养护 / 沉香知识", "内容可用", "进入对应内容页", "匿名可用，记录 content_key"],["走进产业园", "固定展示", "进入产业园图文介绍页", "记录内容曝光与播放"]], boundary: "本页不建设交易闭环或内部认种档案；认种商品、记录、证书和交易归属外部小程序。AI 只作传统文化角度参考，不作鉴定、医疗、法律、财务或投资承诺。", states: "页面加载→分模块成功/失败；开始问帖→授权确认/新对话；商城入口→即将上线提示；认种入口→外部小程序/失败留在首页重试。", logs: "记录 scan_token、页面曝光、模块点击、下载结果、外部小程序跳转结果和错误码；未授权时不记录个人身份。", empty: "单个模块失败不阻塞其他模块；无手串上下文时隐藏直达证书并提供重新识别；外部认种小程序无法打开时留在首页并提示重试。", acceptance: ["模块顺序与已确认首页一致，底部导航不遮挡版权。", "未授权点击问帖先进入微信授权确认，成功后恢复问帖意图。", "认种沉香树不进入内部档案，原型提示正在打开外部小程序并保持首页。"], tech: ["识别结果与 current_bracelet_id 必须绑定。", "生产认种入口使用可配置 AppID 和路径调用 wx.navigateToMiniProgram。", "模块接口独立降级，图片需有替代文本和缓存策略。"] },
   "authorization-sheet": { goal: "解释微信授权用途并在确认后恢复用户刚才的操作。", roles: "首次发起问帖的消费者", entry: "点击开始问帖；点击我的中的授权登录", permission: "未授权用户可见", rules: ["授权说明必须先于微信授权动作展示。", "取消不丢失原入口意图，再次点击可重新唤起。"], fields: [["授权说明", "说明文本", "必填展示", "仅说明头像、昵称和问帖记录用途"],["微信授权登录", "按钮", "必填展示", "唯一确认动作"],["取消", "按钮", "必填展示", "关闭弹层并返回原页面"]], actions: [["微信授权登录", "弹层打开", "唤起授权并恢复原意图", "记录授权结果"],["取消", "弹层打开", "关闭弹层", "记录取消事件"]], boundary: "不得暗示授权后获得超出实际范围的权益。", states: "打开→授权中→成功/失败；取消→关闭。", logs: "记录授权发起、成功、失败原因与恢复目标。", empty: "授权失败保留弹层并提供重试。", acceptance: ["授权后回到用户原本要去的页面。", "取消后页面状态不改变。"], tech: ["授权回调需幂等。", "意图参数需安全白名单化。"] },
-  interpret: { goal: "用简洁的移动对话完成自由提问、必要追问和传统文化角度参考。", roles: "已授权消费者", entry: "首页开始问帖；根导航问帖；历史详情开启新问帖", permission: "微信授权后", rules: ["每次正常进入均创建新的对话，不自动带入上一段历史。", "默认展示广垦沉香 Logo、今天想问什么及事业/感情/财运三个快捷主题。", "仅支持文字输入和发送，不提供图片、文件、附件、相机、麦克风或语音。"], fields: [["新对话空态", "Logo＋引导", "无消息时展示", "展示今天想问什么、说明和三个快捷主题"],["对话消息", "消息列表", "有消息展示", "按时间顺序展示用户与 AI 内容"],["AI 回答", "结构化文本", "生成完成展示", "使用判断、提醒、建议三个层次"],["输入框", "文本框", "固定底部展示", "支持中文文本，避让键盘与手机安全区"],["发送", "按钮", "输入非空且非生成中可用", "发送后展示处理中状态"],["免责声明", "说明文本", "AI 内容中必显", "固定文案：内容由 AI 生成，仅供娱乐参考"]], actions: [["快捷主题", "新对话空态", "直接发送对应主题", "记录 starter_topic"],["发送", "输入非空", "创建消息并返回 AI 回复", "记录 conversation_id、message_id 与耗时"],["返回", "始终展示", "回到来源页面", "已产生消息的对话进入历史记录"]], boundary: "回答不得形成确定性预测、转运承诺或医疗、法律、财务等专业结论。", states: "新对话空态→用户发送→AI 追问/回答→继续追问；请求失败→保留用户消息并重试。", logs: "记录会话创建、消息发送、耗时、错误与安全拦截，不记录图片或音频数据。", empty: "新对话展示 Logo 与快捷主题；网络失败保留用户消息和输入草稿。", acceptance: ["每次进入均为无旧消息的新对话。", "发送后用户消息与 AI 回复顺序正确，回答包含判断、提醒和建议。", "输入框不贴手机边缘且键盘打开后仍可见。"], tech: ["消息接口需支持幂等、主动追问和流式/轮询扩展。", "输入输出必须经过安全策略并保存策略版本。"] },
+  interpret: { goal: "用简洁的移动对话完成自由提问、必要追问和传统文化角度参考。", roles: "已授权消费者", entry: "首页开始问帖；根导航问帖；历史详情开启新问帖", permission: "微信授权后", rules: ["每次正常进入均创建新的对话，不自动带入上一段历史。", "默认展示广垦沉香 Logo、今天想问什么及工作思考/人际沟通/自我成长三个快捷主题。", "仅支持文字输入和发送，不提供图片、文件、附件、相机、麦克风或语音。"], fields: [["新对话空态", "Logo＋引导", "无消息时展示", "展示今天想问什么、说明和三个快捷主题"],["对话消息", "消息列表", "有消息展示", "按时间顺序展示用户与 AI 内容"],["AI 回答", "结构化文本", "生成完成展示", "使用判断、提醒、建议三个层次"],["输入框", "文本框", "固定底部展示", "支持中文文本，避让键盘与手机安全区"],["发送", "按钮", "输入非空且非生成中可用", "发送后展示处理中状态"],["免责声明", "说明文本", "AI 内容中必显", "固定文案：内容由 AI 生成，仅供娱乐参考"]], actions: [["快捷主题", "新对话空态", "直接发送对应主题", "记录 starter_topic"],["发送", "输入非空", "创建消息并返回 AI 回复", "记录 conversation_id、message_id 与耗时"],["返回", "始终展示", "回到来源页面", "已产生消息的对话进入历史记录"]], boundary: "回答不得形成确定性预测、转运承诺或医疗、法律、财务等专业结论。", states: "新对话空态→用户发送→AI 追问/回答→继续追问；请求失败→保留用户消息并重试。", logs: "记录会话创建、消息发送、耗时、错误与安全拦截，不记录图片或音频数据。", empty: "新对话展示 Logo 与快捷主题；网络失败保留用户消息和输入草稿。", acceptance: ["每次进入均为无旧消息的新对话。", "发送后用户消息与 AI 回复顺序正确，回答包含判断、提醒和建议。", "输入框不贴手机边缘且键盘打开后仍可见。"], tech: ["消息接口需支持幂等、主动追问和流式/轮询扩展。", "输入输出必须经过安全策略并保存策略版本。"] },
   profile: { goal: "用重点明确的账号 Banner 集中承载授权状态、问帖记录、证书数量和芯片说明。", roles: "匿名用户和已授权消费者", entry: "根导航我的", permission: "访客可看授权入口；问帖记录和绑定手串需授权", rules: ["Banner 通铺至状态栏并左右贴边，头像、账号文案和授权状态保持同一横排。", "Banner 下半部只展示问帖记录与证书数量，数量在上、标题在下并支持整块点击。", "证书数量采用列表优先路径；Banner 下只保留芯片识别说明。"], fields: [["头像与账号", "身份区", "Banner 上部必显", "未授权展示微信账号，授权后展示微信用户"],["微信授权登录", "按钮/状态", "未授权展示按钮", "点击打开手机内授权确认层，授权后显示已登录"],["问帖记录", "统计入口", "固定展示", "原型显示 1 条，点击进入记录列表"],["证书数量", "统计入口", "固定展示", "原型显示 3 串，点击进入我的手串列表"],["芯片识别说明", "单行入口", "Banner 下唯一列表项", "进入 NFC 识别说明"]], actions: [["微信授权登录", "未授权", "打开授权确认层", "记录来源意图"],["问帖记录", "固定展示", "未授权先授权；已授权进入记录列表", "校验当前用户"],["证书数量", "固定展示", "进入我的手串列表", "生产环境校验绑定关系"],["芯片识别说明", "始终展示", "进入识别说明页", "匿名可用"]], boundary: "不重复展示记录、证书或传统文化解读帮助入口，不泄露其他用户数据。", states: "未授权→授权确认/取消；已授权→计数加载→数据/空态/失败。", logs: "记录授权、两个统计入口点击、手串列表加载与错误。", empty: "计数失败显示 --；无手串或无问帖显示 0，并在目标页给出明确空态。", acceptance: ["头像、账号和登录状态同一行，登录状态右对齐。", "问帖记录和证书数量均为数量在上、标题在下并可点击。", "Banner 下仅保留芯片识别说明。"], tech: ["统计数据与绑定关系按用户隔离。", "Banner 与状态栏安全区需适配 iPhone 和 Pixel。"] },
   "reading-records": { goal: "让用户查找已保存问帖并进入只读详情。", roles: "已授权消费者", entry: "我的→问帖记录", permission: "微信授权后", rules: ["列表按最近更新时间倒序。", "点击记录只进入历史详情，不直接继续旧对话。"], fields: [["问帖标题", "文本", "每条必显", "标题为空时使用首条用户消息摘要"],["相对时间", "时间文本", "每条必显", "依据 updated_at 生成"],["回答摘要", "文本", "有内容展示", "展示最近一条 AI 回答摘要"],["空态", "提示", "无记录展示", "引导开始新的问帖"]], actions: [["问帖记录项", "有记录", "进入只读问帖详情", "记录 conversation_id 并校验归属"],["开始新问帖", "空态展示", "创建全新对话", "记录来源为空态"]], boundary: "本页不提供删除、编辑或继续旧会话输入。", states: "加载→有记录/空态/失败；点击记录→只读详情。", logs: "记录列表查询、记录打开、分页和错误。", empty: "无记录时展示明确空态与开始新问帖入口；失败保留已加载数据并可重试。", acceptance: ["列表按最近更新时间稳定排序。", "点击记录进入只读详情，不直接进入新问帖。"], tech: ["生产列表使用 cursor 分页并按账号隔离。"] },
   "reading-record-detail": { goal: "完整呈现历史问帖上下文，并让用户从独立入口开启新问帖。", roles: "已授权消费者", entry: "问帖记录列表", permission: "仅记录所属用户", rules: ["历史消息只读，不展示输入框。", "开启新问帖必须创建新的 conversation_id，不续接当前历史。"], fields: [["问帖主题", "文本", "必显", "展示历史问题标题"],["消息时间线", "只读列表", "有记录展示", "保留问答顺序、角色与内容"],["AI 免责声明", "说明文本", "AI 内容必显", "内容由 AI 生成，仅供娱乐参考"],["开启新问帖", "按钮", "固定展示", "进入全新对话"]], actions: [["开启新问帖", "始终展示", "创建新会话并进入问帖空态", "记录来源 conversation_id，不复用该 ID"],["返回", "始终展示", "返回问帖记录列表", "保留列表位置"]], boundary: "历史内容只读，不代表当前专业结论，也不能在本页继续发送消息。", states: "加载→详情/不存在/越权；开启新问帖→全新对话。", logs: "记录详情查看、越权拦截和新问帖点击。", empty: "记录不存在或越权统一提示这条问帖记录已不存在，并返回列表。", acceptance: ["历史页不展示输入框。", "开启新问帖后进入无旧消息的新对话。"], tech: ["服务端校验 conversation_id 所属关系。", "不存在与越权使用统一外显错误。"] },
@@ -331,7 +350,7 @@ const pagePrdDefaults: Record<ProductDocPageKey, PagePrd> = {
   "chip-help": { goal: "说明 NFC 识别步骤，并为失败用户提供重试路径。", roles: "首次识别用户、售后人员", entry: "识别失败提示；首页识别说明", permission: "公开可读", rules: ["说明必须短、可操作，失败时优先给重试。", "芯片识别说明下不再放重复说明文字。"], fields: [["识别步骤", "步骤列表", "必填展示", "靠近、保持、等待"],["重新识别", "按钮", "识别失败展示", "重新发起 NFC 识别"]], actions: [["重新识别", "失败状态", "再次调用识别能力", "记录失败与重试次数"]], boundary: "无法识别不等于商品异常，需提供人工核验渠道。", states: "待识别→识别中→成功/失败。", logs: "记录设备能力、耗时、结果码和重试次数。", empty: "设备不支持 NFC 时提示兼容方案。", acceptance: ["用户能理解下一步并完成重试。"], tech: ["兼容 NFC 不可用与权限拒绝。"] },
   "certificate-list": { goal: "让多手串用户先选择手串，再查看所选手串的证书详情或原件待补充状态。", roles: "拥有绑定手串的已授权消费者", entry: "我的→证书数量", permission: "微信授权后，仅本人绑定数据", rules: ["导航标题下直接开始全宽列表，不显示眉题、大标题、数量说明或引导文案。", "点击任一手串整行进入该手串的证书详情。", "有证书显示编号、重量与原件已收录；无证书显示规格与原件待补充。"], fields: [["缩略图", "图片", "每行必显", "与 bracelet_id 对应"],["手串名称", "文本", "每行必显", "使用绑定记录名称"],["证书摘要", "状态文本", "每行必显", "按当前手串显示已收录或待补充，不跨手串复用"]], actions: [["手串列表项", "有绑定数据", "进入所选手串的证书详情", "记录 bracelet_id 并校验归属"],["返回", "始终展示", "回到我的", "保留列表位置"]], boundary: "只展示当前账号已绑定手串；不在详情内增加左右滑动或相邻证书切换。", states: "加载→手串列表/空态/失败；选择手串→证书详情/原件待补充。", logs: "记录列表查看、所选 bracelet_id 和加载错误。", empty: "无绑定手串时展示空态和芯片识别说明；单串无证书时显示原件待补充。", acceptance: ["原型恰好展示三条手串记录。", "点击第二、第三条后不得显示第一条证书数据。", "列表行触控高度不小于 76px。"], tech: ["列表接口需支持分页、绑定状态和账号隔离。", "证书详情必须使用所选 bracelet_id 查询。"] },
   "collection-archive": { goal: "展示首页藏品中的手串档案和可下载电子证书。", roles: "查看本人藏品的消费者", entry: "首页我的藏品→手串卡片", permission: "原型可直接查看；生产个人档案需授权并校验归属", rules: ["档案数据必须与首页藏品卡片一致。", "电子证书使用对应藏品文件名，下载失败不得离开页面。"], fields: [["手串图片", "图片", "必显", "与首页藏品图一致"],["名称与档案编号", "文本", "必显", "原型为海南琼南沉香手串 / CX-2018-072"],["材质与规格", "属性", "必显", "展示档案登记信息"],["档案状态", "状态", "必显", "已认证或异常"],["电子证书", "PDF 文件", "有证书展示", "文件名与藏品一致"]], actions: [["下载电子证书", "证书可用", "开始下载 PDF 并提示结果", "记录 collection_id、文件版本与结果"]], boundary: "档案和证书不构成功效、价格或投资价值承诺。", states: "加载→档案/失败；下载→准备中/成功/失败。", logs: "记录档案查看、证书版本和下载结果。", empty: "档案不存在时提示返回首页；下载失败保留页面并允许重试。", acceptance: ["档案数据与首页卡片一致。", "证书文件名、编号与当前藏品一致。"], tech: ["档案与证书关系由服务端校验。", "下载地址需短时有效并防越权。"] },
-  "industrial-park": { goal: "以关键数据、产业链与分节正文介绍曙光农场全产业链。", roles: "品牌访客和消费者", entry: "首页走进产业园", permission: "公开可读", rules: ["采用图文专题排版，使用客户确认的航拍全景、林业服务站和高效种植示范基地三张照片，不展示演示图集和模拟视频。", "结香技术为试验探索，沉香提取物用于日化、药品等为研发方向。"], fields: [["规模数据", "数据摘要", "四项展示", "1万余亩、44万余株、98个种质资源、2.5万余平方米加工园"],["产业链", "有序列表", "必显", "良种选育、标准化种植、精深加工、品牌培育、线上线下销售"],["园区说明", "分节正文", "六节完整展示", "产业源头与种质资源、技术标准、结香探索、精深加工、出口贸易、品牌发展"]], actions: [["纵向阅读", "始终可用", "阅读全部正文", "记录内容曝光"],["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "按客户提供的文字与确认采用的照片展示；林业服务站不可标注为深加工车间。", states: "加载→完整正文/失败。", logs: "记录内容曝光和加载错误。", empty: "内容加载失败显示重试。", acceptance: ["关键数据准确，长文可完整滚动阅读。", "不出现图集页码或模拟视频入口。"], tech: ["保留内容版本，后续实际媒体须审核后接入。"] },
+  "industrial-park": { goal: "以关键数据、产业链与分节正文介绍曙光农场全产业链。", roles: "品牌访客和消费者", entry: "首页走进产业园", permission: "公开可读", rules: ["采用图文专题排版，保留航拍全景、林业服务站和高效种植示范基地照片，并分别在产业源头与种质资源、技术规范标准化、结香技术探索、出口贸易与国际市场的文末增加示范基地牌、研究所、校企合作和出口照片，不展示演示图集和模拟视频。", "结香技术为试验探索，沉香提取物用于日化、药品等为研发方向。"], fields: [["规模数据", "数据摘要", "四项展示", "1万余亩、44万余株、98个种质资源、2.5万余平方米加工园"],["产业链", "有序列表", "必显", "良种选育、标准化种植、精深加工、品牌培育、线上线下销售"],["园区说明", "分节正文", "六节完整展示", "产业源头与种质资源、技术标准、结香探索、精深加工、出口贸易、品牌发展"]], actions: [["纵向阅读", "始终可用", "阅读全部正文", "记录内容曝光"],["返回", "始终展示", "返回首页", "无业务写操作"]], boundary: "按客户提供的文字与确认采用的照片展示；林业服务站不可标注为深加工车间。", states: "加载→完整正文/失败。", logs: "记录内容曝光和加载错误。", empty: "内容加载失败显示重试。", acceptance: ["关键数据准确，长文可完整滚动阅读。", "不出现图集页码或模拟视频入口。"], tech: ["保留内容版本，后续实际媒体须审核后接入。"] },
   "knowledge-article": { goal: "以接近微信公众号的长文结构展示沉香小知识，当前仅展示。", roles: "文化内容读者", entry: "沉香知识卡片", permission: "公开可读", rules: ["详情页只做展示，不提供点赞、评论、分享或交易操作。", "文章标题、来源、更新时间和正文完整呈现。"], fields: [["文章标题", "文本", "必填展示", "对应知识主题"],["文章正文", "富文本", "必填展示", "微信公众号式段落阅读"],["来源与时间", "元信息", "有数据展示", "标记内容来源和更新时间"]], actions: [["返回", "始终展示", "回到知识列表/来源页", "无业务记录"]], boundary: "文章是知识参考，不构成鉴定结论。", states: "加载→文章/失败。", logs: "记录文章曝光与阅读完成。", empty: "文章缺失展示重试。", acceptance: ["正文可滚动阅读且不出现空白页。"], tech: ["富文本需过滤危险标签，图片懒加载。"] },
 };
 
@@ -339,7 +358,7 @@ function CurrentPagePrd({ pageKey }: { pageKey: ProductDocPageKey }) {
   const resolvedPageKey = pagePrdDefaults[pageKey] ? pageKey : "home";
   const config = productDocPages[resolvedPageKey];
   const data = pagePrdDefaults[resolvedPageKey];
-  const updatedAt = resolvedPageKey === "home" || resolvedPageKey === "certificate" || resolvedPageKey === "certificate-list" ? "2026-09-01" : "2026-08-31";
+  const updatedAt = ["home", "enterprise-custom", "incense-gift", "industrial-park", "provenance"].includes(resolvedPageKey) ? "2026-09-18" : resolvedPageKey === "certificate" || resolvedPageKey === "certificate-list" ? "2026-09-01" : "2026-08-31";
   const flows = data.states.split("；").map(flow => flow.trim()).filter(Boolean);
   return <article className="product-doc-review-article product-doc-review-page-guide current-page-prd">
     <div className="current-page-prd-meta"><span className="status">需求已整理</span><span>页面键：{resolvedPageKey}</span><span>路由：{resolvedPageKey}</span><span>更新：{updatedAt}</span></div>
@@ -438,7 +457,7 @@ function ProductDocumentReview() {
           <div ref={bodyRef} className="product-doc-review-body">
             <CurrentPagePrd pageKey={activePageKey as ProductDocPageKey} />
           </div>
-          <footer className="product-doc-review-footer"><span>琼南沉香 · 15 个产品上下文 · 当前：{productDocPages[activePageKey as ProductDocPageKey]?.label.replace(/^P-\d+\s*/, "") || "首页"}</span><button type="button" onClick={() => setOpen(false)}>关闭 PRD</button></footer>
+          <footer className="product-doc-review-footer"><span>琼南沉香 · {Object.keys(productDocPages).length} 个产品上下文 · 当前：{productDocPages[activePageKey as ProductDocPageKey]?.label.replace(/^P-\d+\s*/, "") || "首页"}</span><button type="button" onClick={() => setOpen(false)}>关闭 PRD</button></footer>
         </> : null}
       </aside>
     </div>,
@@ -519,7 +538,7 @@ function PrototypeToast({ message }: { message: string }) {
 function MiniTabs({ active, onHome, onMall, onAsk, onProfile }: { active: RootTab; onHome: () => void; onMall: () => void; onAsk: () => void; onProfile: () => void }) {
   return <nav className="mini-tabs" aria-label="小程序导航">
     <button className={active === "home" ? "active" : ""} aria-current={active === "home" ? "page" : undefined} onClick={onHome}><HomeIcon aria-hidden="true" /><span>首页</span></button>
-    <button className={`mini-tab-mall${active === "mall" ? " active" : ""}`} aria-label="商城" aria-current={active === "mall" ? "page" : undefined} onClick={onMall}><span className="mini-tab-soon" aria-hidden="true">即将上线</span><IdCardIcon aria-hidden="true" /><span>商城</span></button>
+    <button className={`mini-tab-mall${active === "mall" ? " active" : ""}`} aria-label="商城" aria-current={active === "mall" ? "page" : undefined} onClick={onMall}><IdCardIcon aria-hidden="true" /><span>商城</span></button>
     <button className={active === "ask" ? "active" : ""} aria-current={active === "ask" ? "page" : undefined} onClick={onAsk}><ChatBubbleIcon aria-hidden="true" /><span>问帖</span></button>
     <button className={active === "profile" ? "active" : ""} aria-current={active === "profile" ? "page" : undefined} onClick={onProfile}><PersonIcon aria-hidden="true" /><span>我的</span></button>
   </nav>;
@@ -587,7 +606,7 @@ const plantingIntroduction = "曙光农场沉香产业从2019年开始发展。�
 const plantingSections = [
   { title: "种质资源库建设", paragraphs: ["曙光农场与中国林业科学研究院热带林业研究所（热林所）深度合作，共同建成“优良易结香（奇楠）沉香高效培育技术研究示范基地”暨种质资源圃。", "目前共收集保存了98个沉香优良种质资源，为品种选育、改良和产业化开发奠定了坚实的物质基础。"] },
   { title: "技术规范标准化", paragraphs: ["在总结多年种植管理经验的基础上，农场于2024年编制并发布企业标准《奇楠沉香种植技术规范》（Q/GDNSGNC 001-2024）。", "该标准对园地选择、种苗质量、定植技术、水肥管理、树体修剪、病虫害绿色防控等环节作出了详细规定，实现了种植管理的标准化、流程化。"] },
-  { title: "结香技术探索", paragraphs: ["在确保树木健康生长的前提下，农场积极试验多种结香技术。除传统人工打孔法外，正与华南农业大学等科研团队合作，试验“物理接菌法”等现代生物诱导技术，探索结香周期更短、结香品质更优、对树木伤害更小的可持续结香路径。"] },
+  { title: "结香技术探索", paragraphs: ["在确保树木健康生长的前提下，农场积极试验多种结香技术。除传统人工打孔法外，正与华南农业大学、茂名农林学院等科研团队合作，试验“物理接菌法”等现代生物诱导技术，探索结香周期更短、结香品质更优、对树木伤害更小的可持续结香路径。"] },
 ];
 const parkSections = [
   { title: "产业源头与种质资源", paragraphs: [plantingIntroduction, ...plantingSections[0].paragraphs] },
@@ -597,6 +616,10 @@ const parkSections = [
   { title: "品牌建设与未来发展", paragraphs: ["曙光农场将持续贯彻落实广东农垦集团决策部署，深耕国际市场，强化品牌建设与渠道拓展，致力于将广垦沉香打造成具有国际影响力的品牌。"] },
 ];
 const industryPhotos = {
+  export: { src: "/assets/industry/agarwood-export-saudi.jpg", caption: "2025—2026年广垦沉香出口沙特", width: 3072, height: 4096 },
+  researchInstitute: { src: "/assets/industry/tropical-crops-research-institute.png", caption: "广东农垦热带作物科学研究所", width: 1826, height: 1013 },
+  demonstrationSign: { src: "/assets/industry/demonstration-base-sign.jpg", caption: "易结（棋楠）沉香高效种植和结香示范基地", width: 1080, height: 720 },
+  cooperation: { src: "/assets/industry/college-farm-cooperation.png", caption: "农林学院与曙光农场校企合作签约仪式", width: 1389, height: 761 },
   aerial: { src: "/assets/industry/shuguang-plantation-aerial.jpg", caption: "曙光农场沉香种植基地 · 航拍全景", width: 2275, height: 1279 },
   station: { src: "/assets/industry/forestry-service-station.jpg", caption: "园区林业服务站", width: 5280, height: 2970 },
   demonstration: { src: "/assets/industry/efficient-planting-base.jpg", caption: "广垦沉香高效种植示范基地", width: 2275, height: 1279 },
@@ -604,17 +627,64 @@ const industryPhotos = {
 function IndustryPhoto({ photo, eager = false }: { photo: typeof industryPhotos.aerial; eager?: boolean }) {
   return <figure className="industry-photo"><img src={photo.src} alt={photo.caption} loading={eager ? "eager" : "lazy"} decoding="async" width={photo.width} height={photo.height} /><figcaption>{photo.caption}</figcaption></figure>;
 }
+const industrySectionEndPhotos: Partial<Record<string, typeof industryPhotos.aerial>> = {
+  "产业源头与种质资源": industryPhotos.demonstrationSign,
+  "技术规范标准化": industryPhotos.researchInstitute,
+  "结香技术探索": industryPhotos.cooperation,
+  "出口贸易与国际市场": industryPhotos.export,
+};
 function IndustrySections({ sections, plantingPhoto = false }: { sections: typeof plantingSections; plantingPhoto?: boolean }) {
-  return <div className="farm-story-list industry-introduction">{sections.map((section, index) => <section key={section.title}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{section.title}</h3>{section.paragraphs.map((paragraph, paragraphIndex) => <div key={paragraph}><p>{paragraph}</p>{plantingPhoto && index === 0 && paragraphIndex === 0 ? <IndustryPhoto photo={industryPhotos.demonstration} /> : null}</div>)}</div></section>)}</div>;
+  return <div className="farm-story-list industry-introduction">{sections.map((section, index) => <section key={section.title}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{section.title}</h3>{section.paragraphs.map((paragraph, paragraphIndex) => <div key={paragraph}><p>{paragraph}</p>{plantingPhoto && index === 0 && paragraphIndex === 0 ? <IndustryPhoto photo={industryPhotos.demonstration} /> : null}</div>)}{industrySectionEndPhotos[section.title] ? <IndustryPhoto photo={industrySectionEndPhotos[section.title]!} /> : null}</div></section>)}</div>;
 }
 const parkMetrics = [["1万", "余亩", "沉香种植面积"], ["44万", "余株", "沉香种植株数"], ["98", "个", "优良种质资源"], ["2.5万", "余㎡", "深加工产业园"]] as const;
 function IndustryMetrics({ items }: { items: ReadonlyArray<readonly [string, string, string]> }) {
   return <dl className="industry-metrics">{items.map(([value, unit, label]) => <div key={label}><dt>{label}</dt><dd>{value}<span>{unit}</span></dd></div>)}</dl>;
 }
+const selectionPosters = {
+  "enterprise-custom": { title: "企业定制", image: "/assets/customer-feedback/enterprise-custom-process.jpg", alt: "企业定制流程：需求沟通、方案设计、报价确认、打样制作、批量生产、交付售后；专属顾问一对一服务" },
+  "incense-gift": { title: "香道礼盒", image: "/assets/customer-feedback/incense-gift-poster.jpg", alt: "广东农垦广垦香礼，好运香伴，折扣礼包享不停，含礼盒产品及二维码" },
+} as const;
+type SelectionPosterKey = keyof typeof selectionPosters;
+const customizationSteps = [
+  ["需求沟通", "确认预算、品类与采购周期"],
+  ["方案设计", "提供产品组合与定制方案"],
+  ["报价确认", "明确单价、数量与交付周期"],
+  ["打样制作", "按需求制作样品并确认"],
+  ["批量生产", "车间有序排产，严控品质"],
+  ["交付售后", "完成包装、发货与跟进服务"],
+] as const;
+function SelectionImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  return failed ? <div className="selection-poster-error" role="alert"><p>图片暂时无法加载</p><button type="button" onClick={() => { setAttempt(value => value + 1); setFailed(false); }}>重新加载</button></div> : <img className={className} key={attempt} src={attempt ? `${src}?retry=${attempt}` : src} alt={alt} onError={() => setFailed(true)} />;
+}
+function SelectionDetail({ pageKey }: { pageKey: SelectionPosterKey }) {
+  const enterprise = pageKey === "enterprise-custom";
+  return <MobileScroll className="app-screen selection-detail-scroll"><main className={`selection-detail-page ${pageKey}`} data-product-doc-page={pageKey}>
+    {enterprise ? <>
+      <header className="customization-hero">
+        <img src="/assets/customer-feedback/enterprise-custom-hero.png" alt="米白山水背景中的广垦沉香深绿礼盒" />
+        <div className="customization-hero-copy"><p className="customization-hero-eyebrow">广垦沉香甄选</p><h2>企业定制</h2><p className="customization-hero-tagline">以香为礼，让心意更有分量</p><p className="customization-hero-description">传承自然香韵<br />助力企业传递真挚情谊</p></div>
+      </header>
+      <section className="customization-process" aria-labelledby="customization-process-title"><header><h2 id="customization-process-title">六步定制流程</h2><p>从需求沟通到交付的全链路服务</p></header>
+        <ol className="customization-steps" aria-label="企业定制六步流程">{customizationSteps.map(([title, description], index) => <li key={title}><span className="customization-step-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
+      </section>
+      <section className="customization-service"><h3>专属顾问 <span>一对一服务</span></h3><ul aria-label="定制适用场景">{["团购采购", "节日礼品", "企业伴手礼"].map(label => <li key={label}>{label}</li>)}</ul></section>
+    </> : <>
+      <header className="selection-detail-heading"><p className="selection-detail-eyebrow">广垦沉香甄选 · 香道礼盒</p><h2>广垦香礼<br /><em>好运香伴</em></h2><p className="selection-detail-deck">雅集赠礼 · 一盒成礼</p></header>
+      <figure className="selection-gift-visual"><SelectionImage src="/assets/customer-feedback/incense-gift-products.png" alt="广垦香礼礼盒产品组合：沉香礼盒、香器与礼袋" /><figcaption>以香为礼，心意相随</figcaption></figure>
+      <ul className="selection-gift-occasions" aria-label="礼赠场景"><li>雅集赠礼</li><li>节日礼品</li><li>企业伴手礼</li></ul>
+      <section className="selection-gift-contact" aria-label="香道礼盒微信二维码"><div><p>礼盒活动</p><h3>折扣礼包<br />享不停</h3><span>微信扫码</span></div><div className="gift-qr-frame"><div className="gift-qr-viewport"><SelectionImage src="/assets/customer-feedback/incense-gift-poster.jpg" alt="香道礼盒微信二维码，来自原宣传图" className="gift-qr-source" /></div></div></section>
+    </>}
+    <p className="selection-detail-signature">广东农垦 · 广垦沉香</p>
+  </main></MobileScroll>;
+}
+const selectionPosterScreen = (keyboard: ReturnType<typeof useKeyboard>, pageKey: SelectionPosterKey): FlowScreen => ({ id: pageKey, header: flow => <TopBar title={selectionPosters[pageKey].title} back={flow.pop} keyboard={keyboard} />, headerHeight: 54, render: () => <SelectionDetail pageKey={pageKey} /> });
+
 const selectionItems = [
   { title: "手串收藏", description: "海南沉香 · 温润随身", background: "/assets/home-selection/bracelet-background-v2.png" },
-  { title: "香道礼盒", description: "雅集赠礼 · 一盒成礼", background: "/assets/home-selection/gift-background-v2.png" },
-  { title: "企业定制", description: "专属定制 · 国企礼赠", background: "/assets/home-selection/custom-background-v2.png" },
+  { title: "香道礼盒", description: "雅集赠礼 · 一盒成礼", background: "/assets/home-selection/gift-background-v2.png", pageKey: "incense-gift" },
+  { title: "企业定制", description: "专属定制 · 国企礼赠", background: "/assets/home-selection/custom-background-v2.png", pageKey: "enterprise-custom" },
   { title: "沉香树认种", description: "一树一档 · 见证生长", background: "/assets/home-selection/tree-background-v2.png" },
 ] as const;
 function IndustrialPark() {
@@ -677,10 +747,9 @@ function Home({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof useKe
         <section className="home-selection" data-home-section="home-selection">
           <div className="selection-heading">
             <span><h3>广垦沉香甄选</h3><small>从日常佩戴到香事雅集</small></span>
-            <button type="button" aria-label="即将上线" onClick={mall}><span>即将上线</span><ChevronRightIcon aria-hidden="true" /></button>
           </div>
           <div className="selection-grid">
-            {selectionItems.map(item => <button className="selection-item" type="button" key={item.title} onClick={mall}>
+            {selectionItems.map(item => <button className="selection-item" type="button" key={item.title} onClick={() => { if ("pageKey" in item) { prepareH5Transition(keyboard); flow.push(selectionPosterScreen(keyboard, item.pageKey)); } else mall(); }}>
               <img className="selection-item-background" src={item.background} alt="" />
               <span className="selection-item-heading"><strong>{item.title}</strong></span>
               <small className="selection-item-description">{item.description}</small>
@@ -777,14 +846,14 @@ function Profile({ flow, keyboard }: { flow: any; keyboard: ReturnType<typeof us
 type AgentMessage = { id: number; role: "agent" | "user"; text: string };
 
 const starterPrompts = [
-  { label: "事业", prompt: "近期是否适合推进新的合作？" },
-  { label: "感情", prompt: "这段关系接下来会怎样？" },
-  { label: "财运", prompt: "今年的财运需要注意什么？" },
+  { label: "工作思考", prompt: "面对工作中的难题，如何梳理思路和行动步骤？" },
+  { label: "人际沟通", prompt: "如何更清晰地表达想法，增进沟通与理解？" },
+  { label: "自我成长", prompt: "如何制定切实可行的个人成长计划？" },
 ];
 const firstMessage: AgentMessage = { id: 1, role: "agent", text: "我是你的 AI 问事助手。先说说最近最挂心的事，我会再问两三句，然后给你一个传统文化角度的参考。" };
 
 function simulatedReply(userTurn: number): Omit<AgentMessage, "id" | "role"> {
-  if (userTurn === 0) return { text: "我听明白了。为了把这件事问得更准，我想再确认三点：\n1. 这件事大概持续多久了？\n2. 你更担心“时机不对”，还是“合作对象不可靠”？\n3. 你最想守住的结果是什么？" };
+  if (userTurn === 0) return { text: "我们可以一起梳理。先补充三点背景：\n1. 你目前遇到的具体情况是什么？\n2. 最困扰你的问题是什么？\n3. 你希望实现怎样的改变？" };
   if (userTurn === 1) return { text: "判断：这件事可以继续推进，但不宜一次押得太重。\n\n提醒：真正需要观察的不是对方此刻的表态，而是能否持续兑现小承诺。\n\n建议：先约定一个七天内可完成的小目标，同时写清双方投入和退出边界。" };
   return { text: "继续看这件事，眼下最有价值的不是等一个确定答案，而是设计一次低成本验证。你还可以接着问我时机、对象或下一步行动。" };
 }
@@ -847,13 +916,13 @@ function FortuneAgent({ keyboard }: { keyboard: ReturnType<typeof useKeyboard> }
         {messages.map((message, index) => <article className={`fortune-message ${message.role}`} data-last={index === messages.length - 1 && !thinking ? "true" : undefined} key={message.id}>
           <div className="fortune-bubble">{message.role === "agent" ? renderAgentText(message.text) : <p>{message.text}</p>}</div>
         </article>)}
-        {thinking ? <article className="fortune-message agent thinking" data-last="true"><div className="fortune-bubble reading-thinking" aria-label="AI正在思考"><span>正在推演…</span><i /><i /><i /></div></article> : null}
+        {thinking ? <article className="fortune-message agent thinking" data-last="true"><div className="fortune-bubble reading-thinking" aria-label="AI正在思考"><span>正在思考…</span><i /><i /><i /></div></article> : null}
       </div>}
     </main></MobileScroll>
     <div className="reading-composer">
       <p className="reading-disclaimer">内容由 AI 生成，仅供娱乐参考</p>
       <div className="reading-input-shell">
-        <KeyboardTextarea aria-label="向 AI 问事助手提问" value={draft} disabled={thinking} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } }} placeholder={thinking ? "正在推演，请稍候…" : "给 AI 问事发消息"} rows={1} maxLength={160} />
+        <KeyboardTextarea aria-label="向 AI 问事助手提问" value={draft} disabled={thinking} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } }} placeholder={thinking ? "正在思考，请稍候…" : "给 AI 问事发消息"} rows={1} maxLength={160} />
         <button className="reading-send" type="button" aria-label="发送" disabled={thinking || !draft.trim()} onClick={() => send()}><ArrowUpIcon aria-hidden="true" /></button>
       </div>
     </div>
@@ -897,7 +966,7 @@ const provenanceScreen = (keyboard: ReturnType<typeof useKeyboard>, record: Cert
       <section className="provenance-journey" aria-label="本串六站溯源记录">{provenanceStages.map((stage, index) => <article className="provenance-stage" key={stage.title}>
         <header className="provenance-stage-heading"><span className="provenance-stage-number">{String(index + 1).padStart(2, "0")}</span><div><p>第 {index + 1} 站 · {stage.label}</p><h3>{stage.title}</h3></div><time>{stage.date}</time></header>
         <p className="provenance-stage-body">{stage.body}</p>
-        {stage.photos.length > 0 && <Carousel className="provenance-photos" contentClassName="provenance-photo-track" ariaLabel={`${stage.title}现场照片`}>{stage.photos.map(([file, caption]) => <figure key={file}><img src={`/assets/provenance/${file}`} alt={caption} loading="lazy" /><figcaption>{caption}</figcaption></figure>)}</Carousel>}
+        {stage.photos.length > 0 && <Carousel className="provenance-photos" contentClassName="provenance-photo-track" ariaLabel={`${stage.title}现场照片`}>{stage.photos.map(([file, caption]) => <figure key={file}><img src={`/assets/provenance/${file}`} alt={caption} loading="lazy" className={file === "automatic-weather-station.jpg" ? "provenance-photo-contain" : undefined} /><figcaption>{caption}</figcaption></figure>)}</Carousel>}
         <section className="provenance-stage-data" aria-label="详细数据"><h4>详细数据</h4><dl className="certificate-fields">{stage.fields.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
       </article>)}</section>
     </> : <div className="certificate-empty"><strong>本串溯源信息待补充</strong><p>手串编号：{record.key.toUpperCase()}</p><p>尚未收录这串手串的种苗、种植、造香、采收、淳化与成串记录。</p></div>}
