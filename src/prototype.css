@@ -120,7 +120,7 @@ button { font: inherit; color: inherit; }
 .selection-item:first-child .selection-item-heading strong { color: #244c3e; }
 .selection-item:first-child .selection-item-description { color: #7b817b; }
 .selection-item:first-child .selection-item-action { color: #9b7048; }
-.prototype-toast { position: absolute; z-index: 30; left: 50%; bottom: calc(var(--root-bottom-safe) + 82px); transform: translateX(-50%); padding: 11px 16px; border-radius: 999px; background: rgba(31, 67, 53, .94); color: #fff; font-size: 13px; white-space: nowrap; box-shadow: 0 8px 24px rgba(20, 45, 35, .2); }
+.prototype-toast { position: absolute; z-index: 30; left: 50%; bottom: calc(var(--root-bottom-safe, var(--device-safe-area-bottom, 34px)) + 82px); transform: translateX(-50%); padding: 11px 16px; border-radius: 999px; background: rgba(31, 67, 53, .94); color: #fff; font-size: 13px; white-space: nowrap; box-shadow: 0 8px 24px rgba(20, 45, 35, .2); }
 
 /* Profile */
 .mini-profile { padding-bottom: 0; background: var(--paper); }
@@ -774,7 +774,7 @@ button { font: inherit; color: inherit; }
 .archive-meta span { color: #7a817b; font-size: 12px; }
 .archive-meta strong { display: block; color: #203c30; margin-top: 5px; font-size: 13px; }
 
-/* Six-stage provenance journey from the customer source document. */
+/* Five-stage provenance journey from the revised September 18 source. */
 .provenance-detail { padding-bottom: calc(var(--mobile-safe-area-height) + 32px); }
 .provenance-detail h2 { margin: 8px 0; font-size: 26px; line-height: 1.4; }
 .provenance-product-name { margin: 0 0 22px; font-size: 13px; color: #737973; }
@@ -795,7 +795,8 @@ button { font: inherit; color: inherit; }
 .provenance-photo-track { display: flex; gap: 10px; width: 100%; }
 .provenance-photos figure { margin: 0; flex: 0 0 88%; min-width: 0; }
 .provenance-photos figure:only-child { flex-basis: 100%; }
-.provenance-photos img { display: block; width: 100%; height: 210px; object-fit: cover; border-radius: 8px; }
+.provenance-photos img { display: block; width: 100%; height: 210px; object-fit: contain; border-radius: 8px; }
+.provenance-stage:nth-child(n + 2):nth-child(-n + 4) .provenance-photos img { object-fit: cover; }
 .provenance-photos figcaption { padding: 8px 0 12px; font-size: 12px; color: #737973; text-align: center; }
 .provenance-stage-data h4 { margin: 14px 0 4px; font-size: 13px; font-weight: 500; color: #31553f; }
 .provenance-stage-data .certificate-fields { margin: 0; }
@@ -849,7 +850,6 @@ button { font: inherit; color: inherit; }
 /* Park article alignment and the complete planting-management weather-station photo. */
 .industry-editorial h2, .industry-editorial h3, .industry-editorial .industry-photo figcaption { text-align: center; }
 .industry-editorial .industry-photo img { margin-inline: auto; }
-.provenance-photos img.provenance-photo-contain { object-fit: contain; }
 
 .selection-gift-occasions { flex: 0 0 auto; display: flex; justify-content: center; gap: 0; margin: 12px 0 16px; padding: 0; list-style: none; font-size: 11px; color: #717a68; }
 .selection-gift-occasions li + li::before { content: "·"; margin: 0 10px; color: #aa8d66; }
@@ -862,3 +862,41 @@ button { font: inherit; color: inherit; }
 .gift-qr-viewport .gift-qr-source { position: absolute; width: 1049%; max-width: none; height: auto; left: -708%; top: -409.5%; }
 .gift-qr-viewport .selection-poster-error { padding: 5px; font-size: 11px; }
 .gift-qr-viewport .selection-poster-error button { padding: 0 8px; }
+
+/* Bracelet binding, shared identity and list-only swipe management. */
+.nfc-demo-controls { position: fixed; z-index: 45; left: 20px; bottom: 20px; width: 230px; padding: 14px; display: grid; gap: 9px; border: 1px solid #dce3dc; border-radius: 12px; background: #fff; box-shadow: 0 4px 18px #193d2110; color: #294336; font: 13px system-ui, sans-serif; }
+.nfc-demo-controls[data-expanded="false"] { width: 180px; padding: 6px; }
+.nfc-demo-options { display: grid; gap: 9px; }
+.nfc-demo-controls .nfc-demo-toggle { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 10px; font-weight: 600; }
+.nfc-demo-toggle span { font-size: 11px; font-weight: 400; opacity: .75; }
+.nfc-demo-controls select { width: 100%; min-height: 36px; border: 1px solid #d4ded5; border-radius: 6px; padding: 4px 8px; background: #fff; color: #324b3b; }
+.nfc-demo-controls button { min-height: 38px; border: 0; border-radius: 7px; background: #25543d; color: white; cursor: pointer; }
+.nfc-demo-controls small { color: #7a837a; font-size: 11px; }
+.binding-bracelet { display: flex; align-items: center; gap: 12px; padding: 6px 0 12px; text-align: left; }
+.binding-bracelet img { width: 68px; height: 68px; object-fit: contain; background: #f4f1e8; border-radius: 10px; }
+.binding-bracelet strong { font-size: 14px; color: #2a4535; }
+.binding-bracelet span { display: block; margin-top: 8px; font-size: 11px; color: #788174; }
+.binding-confirm > .binding-delete-confirm { background: #b4473e; }
+.bracelet-unbound { display: flex; align-items: center; gap: 10px; padding: 16px; border: 1px solid #e4e6db; border-radius: 13px; background: #fff; }
+.bracelet-unbound h3 { font-size: 14px; margin: 0 0 10px; }
+.bracelet-unbound strong { font-size: 13px; font-weight: 500; color: #637065; }
+.bracelet-unbound p { margin: 6px 0 0; font-size: 11px; line-height: 1.7; color: #7a8278; }
+.bracelet-unbound button { display: flex; align-items: center; white-space: nowrap; min-height: 44px; background: none; border: 0; padding: 0; font-size: 12px; color: #315e42; }
+.bracelet-unbound svg { width: 14px; }
+.collection-card-header { grid-template-columns: minmax(0, 1fr) auto auto; }
+.collection-certificate-pending { color: #999d92; font-size: 11px; white-space: nowrap; }
+.bracelet-swipe-row { position: relative; overflow: hidden; touch-action: pan-y; }
+.bracelet-swipe-row .certificate-list-row { position: relative; z-index: 1; grid-template-columns: 58px minmax(0, 1fr) 40px; background: #f8f6f0; cursor: default; }
+.bracelet-swipe-row .certificate-list-row em { font-size: 11px; color: #55775c; font-style: normal; text-align: right; }
+.bracelet-delete { position: absolute; inset: 0 0 0 auto; width: 80px; min-height: 82px; border: 0; background: #bd4c42; color: #fff; font-size: 14px; }
+.bracelet-list-empty { padding: 74px 8px; text-align: center; color: #81867d; }
+.bracelet-list-empty > svg { width: 32px; height: 32px; color: #6f8b73; }
+.bracelet-list-empty h2 { font-size: 18px; color: #3f5443; }
+.bracelet-list-empty p { font-size: 13px; line-height: 1.9; }
+@media (max-width: 900px) { .nfc-demo-controls { left: 12px; bottom: 12px; width: min(280px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; } }
+
+.collection-pagination { display: flex; align-items: center; justify-content: center; height: 44px; gap: 0; color: #71816e; }
+.collection-pagination button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; }
+.collection-pagination i { width: 6px; height: 6px; border-radius: 50%; background: #d1d8cd; }
+.collection-pagination button[aria-pressed="true"] i { width: 16px; border-radius: 4px; background: #376448; }
+.collection-pagination span { font-size: 11px; margin-left: 4px; }

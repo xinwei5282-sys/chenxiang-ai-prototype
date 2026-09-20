@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
+  if (/certificate|provenance|profile|证书|溯源/i.test(testInfo.title)) {
+    await page.addInitScript(() => localStorage.setItem("guangken-bracelet-bindings-v1", JSON.stringify({ boundIds: ["cx-2018-072", "cx-2024-116", "cx-2025-031"], activeId: "cx-2018-072" })));
+  }
   await page.goto("/");
 });
 
@@ -264,19 +267,6 @@ test("the source industrial park entry is a compact image-backed banner", async 
   expect(await park.evaluate(node => getComputedStyle(node).backgroundImage)).not.toBe("none");
 });
 
-test("my collection contains only the bracelet archive", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  await expect(collection.locator(".collection-card")).toHaveCount(1);
-  await expect(collection.getByText("海南琼南沉香手串", { exact: true })).toBeVisible();
-  await expect(collection.getByText("琼南一号认种沉香树", { exact: true })).toHaveCount(0);
-  await expect(collection.getByRole("button", { name: "上一件藏品" })).toHaveCount(0);
-  await expect(collection.getByRole("button", { name: "下一件藏品" })).toHaveCount(0);
-  await expect(collection.locator(".collection-pagination")).toHaveCount(0);
-  await expect(collection.getByRole("link", { name: /认种证书/ })).toHaveCount(0);
-  await collection.getByRole("button", { name: "查看海南琼南沉香手串档案" }).click();
-  await expect(page.getByRole("heading", { name: "海南琼南沉香手串档案" })).toBeVisible();
-});
-
 test("adoption service hands off to an external mini program without an internal archive", async ({ page }) => {
   const service = page.getByRole("button", { name: "认种沉香树" });
   await expect(service).toHaveCount(1);
@@ -285,62 +275,6 @@ test("adoption service hands off to an external mini program without an internal
   await expect(page.getByTestId("flow-current")).toHaveAttribute("data-flow-screen", "home");
   await expect(page.getByRole("heading", { name: "认种档案" })).toHaveCount(0);
   await expect(page.getByText("成长时间线", { exact: true })).toHaveCount(0);
-});
-
-test("collection card keeps bracelet identity and actions item-specific", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  const card = collection.locator('.collection-card[data-active="true"]');
-
-  await expect(card).toContainText("海南琼南沉香手串");
-  await expect(card).toContainText("已认证");
-  await expect(card).toContainText("档案编号");
-  await expect(card).toContainText("CX-2018-072");
-  await expect(card.getByRole("img", { name: "海南琼南沉香手串" })).toHaveAttribute("src", "/assets/customer-feedback/collection-bracelet-thumbnail.png");
-  await expect(card.getByRole("link", { name: "导出海南琼南沉香手串电子证书" })).toBeVisible();
-  await expect(collection.getByRole("link", { name: /导出.*电子证书/ })).toHaveCount(1);
-  await expect(collection.getByRole("button", { name: "查看海南琼南沉香手串档案" })).toBeVisible();
-});
-
-test("single bracelet collection card fits without horizontal overflow on iPhone and Pixel", async ({ page }) => {
-  for (const device of ["iphone", "pixel-10"] as const) {
-    await page.getByTestId("device-picker").click();
-    await page.getByTestId(`device-option-${device}`).click();
-    const card = page.getByRole("region", { name: "我的藏品" }).locator('.collection-card[data-active="true"]');
-    const layout = await card.evaluate(cardNode => {
-      const viewport = cardNode.closest<HTMLElement>(".collection-carousel")!;
-      const cardBox = cardNode.getBoundingClientRect();
-      const image = cardNode.querySelector<HTMLElement>(".collection-card-body > img")!.getBoundingClientRect();
-      const copy = cardNode.querySelector<HTMLElement>(".collection-card-copy")!.getBoundingClientRect();
-      const metadata = [...cardNode.querySelectorAll<HTMLElement>("dd")];
-      return {
-        widthDelta: Math.abs(cardBox.width - viewport.clientWidth),
-        hasHorizontalOverflow: viewport.scrollWidth > viewport.clientWidth + 1,
-        imageCopyGap: copy.left - image.right,
-        metadataFits: metadata.every(item => item.scrollWidth <= item.clientWidth + 1),
-      };
-    });
-    expect(layout.widthDelta).toBeLessThanOrEqual(1);
-    expect(layout.hasHorizontalOverflow).toBe(false);
-    expect(layout.imageCopyGap).toBeGreaterThanOrEqual(18);
-    expect(layout.metadataFits).toBe(true);
-  }
-});
-
-test("bracelet certificate link points at its matching demonstration PDF", async ({ page }) => {
-  const collection = page.getByRole("region", { name: "我的藏品" });
-  const bracelet = collection.locator('.collection-card[data-active="true"]').getByRole("link", { name: "导出海南琼南沉香手串电子证书" });
-  await expect(bracelet).toBeVisible();
-  await expect(bracelet).toHaveAttribute("href", "/assets/certificates/bracelet-digital-certificate-demo.pdf"); await expect(bracelet).toHaveAttribute("download", "海南琼南沉香手串-电子证书-演示.pdf");
-});
-
-test("certificate download reports success and an unavailable file can be retried", async ({ page }) => {
-  const success = page.waitForEvent("download"); await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click();
-  await expect((await success).suggestedFilename()).toBe("海南琼南沉香手串-电子证书-演示.pdf"); await expect(page.getByRole("status")).toHaveText("电子证书已开始下载");
-  await page.route("**/bracelet-digital-certificate-demo.pdf", async route => { if (route.request().method() === "HEAD") await route.fulfill({ status: 404, body: "missing" }); else await route.continue(); });
-  await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click(); await expect(page.getByRole("status")).toHaveText("电子证书下载失败，请重试");
-  await page.unroute("**/bracelet-digital-certificate-demo.pdf");
-  const retry = page.waitForEvent("download"); await page.getByRole("link", { name: "导出海南琼南沉香手串电子证书" }).click();
-  await expect((await retry).suggestedFilename()).toBe("海南琼南沉香手串-电子证书-演示.pdf"); await expect(page.getByRole("status")).toHaveText("电子证书已开始下载");
 });
 
 test("industrial park and knowledge rows open complete destinations", async ({ page }) => {
@@ -418,7 +352,7 @@ test("mini-program tabs switch between home and my without opening a pushed deta
 
   let current = page.getByTestId("flow-current");
   await expect(page.getByRole("heading", { name: "我的", exact: true })).toBeVisible();
-  await expect(current.getByRole("button", { name: "本串证书" })).toContainText("3 串");
+  await expect(current.getByRole("button", { name: "我的手串" })).toContainText("3 串");
   await expect(current.getByRole("button", { name: "返回" })).toHaveCount(0);
 
   await page.waitForTimeout(350);
@@ -439,7 +373,7 @@ test("profile separates records and management from repeated home content", asyn
   const bannerActions = accountBanner.locator(".profile-banner-actions");
   await expect(bannerActions.getByRole("button")).toHaveCount(2);
   await expect(bannerActions.getByRole("button", { name: "问帖记录" })).toContainText("1 条");
-  await expect(bannerActions.getByRole("button", { name: "本串证书" })).toContainText("3 串");
+  await expect(bannerActions.getByRole("button", { name: "我的手串" })).toContainText("3 串");
   const actions = current.locator(".profile-action-list");
   await expect(actions.getByRole("button")).toHaveCount(1);
   const chipHelpAction = actions.getByRole("button", { name: "芯片识别说明" });
@@ -447,7 +381,7 @@ test("profile separates records and management from repeated home content", asyn
   await expect(chipHelpAction.locator("small")).toHaveCount(0);
   await expect(actions.getByRole("button", { name: "关于传统文化解读" })).toHaveCount(0);
   await expect(actions.getByRole("button", { name: "问帖记录" })).toHaveCount(0);
-  await expect(actions.getByRole("button", { name: "本串证书" })).toHaveCount(0);
+  await expect(actions.getByRole("button", { name: "我的手串" })).toHaveCount(0);
   await expect(current.getByText("个人香事档案", { exact: true })).toHaveCount(0);
   await expect(current.getByText("记录与管理", { exact: true })).toHaveCount(0);
   await expect(current.getByText("使用帮助", { exact: true })).toHaveCount(0);
@@ -716,47 +650,20 @@ test("reading record opens detail and starts a fresh question", async ({ page })
   await expect(page.getByText(/接着聊你之前关于合作的问帖/)).toHaveCount(0);
 });
 
-test("profile certificate and chip-help rows open their intended pages", async ({ page }) => {
+test("profile certificate list stays on list after row click", async ({ page }) => {
   await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
   const current = page.getByTestId("flow-current");
-  await expect(current.getByRole("button", { name: "本串证书" })).toBeVisible();
-  await expect(current.getByRole("button", { name: "我的手串" })).toHaveCount(0);
-  await expect(current.getByRole("button", { name: "关于传统文化解读" })).toHaveCount(0);
-  await current.getByRole("button", { name: "本串证书" }).click();
-  await expect(page.getByRole("heading", { name: "我的手串", exact: true })).toBeVisible();
-  const certificateList = page.locator(".certificate-list");
-  await expect(certificateList.locator(".page-eyebrow")).toHaveCount(0);
-  await expect(certificateList.locator("h2")).toHaveCount(0);
-  await expect(certificateList.locator(".certificate-list-intro")).toHaveCount(0);
-  const braceletRows = certificateList.locator(".certificate-list-row");
-  await expect(braceletRows).toHaveCount(3);
-  await expect(braceletRows.nth(0)).toContainText("ZHTC26063030124");
-  await expect(braceletRows.nth(0)).toContainText("原件已收录");
-  await expect(braceletRows.nth(1)).toContainText("原件待补充");
-  await expect(braceletRows.nth(2)).toContainText("原件待补充");
-  for (const label of ["奇楠沉香算盘珠手串", "琼南蜜韵沉香手串", "岭南雅韵沉香手串"]) await expect(page.getByRole("button", { name: new RegExp(label) })).toBeVisible();
-  await page.getByRole("button", { name: /琼南蜜韵沉香手串.*原件待补充/ }).click();
-  await expect(page.getByRole("heading", { name: "证书详情", exact: true })).toBeVisible();
-  await expect(page.getByText("琼南蜜韵沉香手串", { exact: true })).toBeVisible();
-  await expect(page.getByText("证书原件待补充", { exact: true })).toBeVisible();
-  await expect(page.getByText("ZHTC26063030124", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("证书原件已收录", { exact: true })).toHaveCount(0);
-  await expect(page.getByRole("img", { name: "材质检验证证书原件" })).toHaveCount(0);
-  await page.getByRole("button", { name: "返回" }).click();
-  await expect(page.getByRole("heading", { name: "我的手串", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: /岭南雅韵沉香手串.*原件待补充/ }).click();
-  await expect(page.getByText("证书原件待补充", { exact: true })).toBeVisible();
-  await expect(page.getByText("ZHTC26063030124", { exact: true })).toHaveCount(0);
-  await page.getByRole("button", { name: "返回" }).click();
-  await page.getByRole("button", { name: "返回" }).click();
-  await page.waitForTimeout(250);
-  await current.getByRole("button", { name: "芯片识别说明" }).click();
-  await expect(page.getByRole("heading", { name: "芯片识别说明", exact: true })).toBeVisible();
+  await current.getByRole("button", { name: "我的手串" }).click();
+  const list = page.locator(".certificate-list");
+  await expect(list).toBeVisible();
+  await expect(list.locator(".certificate-list-row")).toHaveCount(3);
+  await list.locator(".certificate-list-row").nth(1).click();
+  await expect(page.locator(".certificate-list")).toBeVisible();
 });
 
 test("multi-certificate list stays full-width and reachable on iPhone and Pixel", async ({ page }) => {
   await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
-  await page.getByRole("button", { name: "本串证书" }).click();
+  await page.getByRole("button", { name: "我的手串" }).click();
 
   const readLayout = () => page.getByTestId("flow-current").last().evaluate((current) => {
     const scroller = current.querySelector<HTMLElement>('[data-testid="mobile-scroll"]')!;
@@ -791,7 +698,7 @@ test("multi-certificate list stays full-width and reachable on iPhone and Pixel"
 test("profile chip-help page explains the complete recognition flow", async ({ page }) => {
   await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
   await page.getByRole("button", { name: "芯片识别说明" }).click();
-  for (const text of ["轻触手串芯片", "识别成功后进入手串首页"]) {
+  for (const text of ["轻触手串芯片", "识别后确认是否绑定"]) {
     await expect(page.getByText(text, { exact: true })).toBeVisible();
   }
   await expect(page.getByText(/芯片不会直接开始问帖/)).toBeVisible();
@@ -1138,7 +1045,7 @@ test("product document follows the active page and gives the login layer precede
   await page.getByRole("button", { name: "返回" }).click();
 
   await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
-  await page.getByRole("button", { name: "本串证书" }).click();
+  await page.getByRole("button", { name: "我的手串" }).click();
   await trigger.click();
   await expect(drawer.getByRole("heading", { name: "我的手串 · 页面 PRD", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "关闭 PRD", exact: true }).first().click();
@@ -1182,7 +1089,7 @@ test("product document drawer navigates, closes, and leaves the phone operable",
 
 
 for (const device of ["iphone", "pixel-10"]) {
-  test(`provenance replaces knowledge with the six source stages on ${device}`, async ({ page }) => {
+  test(`provenance follows the September 18 source without inventing missing data on ${device}`, async ({ page }) => {
     test.setTimeout(40000);
     await page.getByTestId("device-picker").click();
     await page.getByTestId(`device-option-${device}`).click();
@@ -1191,27 +1098,38 @@ for (const device of ["iphone", "pixel-10"]) {
     await page.getByTestId("home-provenance-link").click();
     const current = page.getByTestId("flow-current");
     const detail = current.locator(".provenance-detail");
-    await expect(detail).toContainText("GKCX-20260915");
+    await expect(detail).not.toContainText("GKCX-20260915");
+    await expect(detail).not.toContainText("担杆岭");
+    await expect(detail.locator(".provenance-passport")).toContainText("待补充");
     await expect(detail.getByText("原型演示数据 · 芯片 UID 待补充", { exact: true })).toHaveCount(0);
-    await expect(detail.locator(".provenance-stage h3")).toHaveText(["种苗培育", "种植管理", "打孔造香", "采收取香", "精工淳化", "成品成串"]);
+    await expect(detail.locator(".provenance-stage h3")).toHaveText(["种植管理", "打孔造香", "采收取香", "加工制作（淳化）", "成品手串"]);
     await expect.poll(() => current.evaluate(el => Math.abs(new DOMMatrix(getComputedStyle(el).transform).m41))).toBeLessThan(0.1);
     await page.addStyleTag({ content: ".mobile-cursor { display:none !important; }" });
-    await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-restored-2026-09-15/${device}.png` });
-    for (const [index, expected] of [[0, "GK-YM-2018-03"], [1, "担杆岭"], [2, "2023 年 6 月"], [3, "温国波"], [4, "约 90 天"], [5, "2026 年 9 月 10 日"]] as const) {
+    await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-revised-2026-09-20/${device}.png` });
+    for (const [index, expected] of [[0, "2019 年"], [1, "2023 年（月待补充）"], [2, "温国波"], [3, "约 20 天"], [4, "2026 年（月日待补充）"]] as const) {
       const stage = detail.locator(".provenance-stage").nth(index);
       await expect(stage.locator("details, summary")).toHaveCount(0);
       await stage.locator("dl").scrollIntoViewIfNeeded();
       await expect(stage.locator("dl")).toBeVisible();
       await expect(stage.locator("dl")).toContainText(expected);
-      if (index === 2 || index === 5) await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-restored-2026-09-15/${device}-stage-${index + 1}.png` });
+      if (index === 3 || index === 4) await page.getByTestId("device-screen").screenshot({ path: `audit/provenance-revised-2026-09-20/${device}-stage-${index + 1}.png` });
 
     }
+    const finished = detail.locator(".provenance-stage").last();
+    await expect(finished).toContainText("第 5 站 · 一珠一码");
+    await expect(finished.getByText("成品图片待补充", { exact: true })).toHaveCount(0);
+    for (const label of ["手串唯一编号", "手串规格", "质检证书编号"]) {
+      await expect(finished.locator("dl > div").filter({ has: page.getByText(label, { exact: true }) }).locator("dd")).toHaveText("待补充");
+    }
+    await expect(detail).not.toContainText("90 天");
+    for (const [index, count] of [4, 4, 6, 6, 0].entries()) await expect(detail.locator(".provenance-stage").nth(index).locator("img")).toHaveCount(count);
+    await expect(detail.locator("img")).toHaveCount(20);
     for (const photo of await detail.locator("img").all()) {
       await photo.scrollIntoViewIfNeeded();
       await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)).toBe(true);
     }
     expect(await detail.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
-    await expect(current.getByRole("button", { name: "查看本串证书", exact: true })).toHaveCount(0);
+    await expect(current.getByRole("button", { name: "查看我的手串", exact: true })).toHaveCount(0);
     await page.getByRole("button", { name: "返回", exact: true }).click();
     await expect(page.getByTestId("home-provenance-link")).toBeVisible();
     await page.getByRole("button", { name: "查看更多知识文章" }).click();
@@ -1219,15 +1137,4 @@ for (const device of ["iphone", "pixel-10"]) {
   });
 }
 
-test("certificate details omit provenance links for present and missing originals", async ({ page }) => {
-  await page.getByRole("navigation", { name: "小程序导航" }).getByRole("button", { name: "我的" }).click();
-  await page.getByRole("button", { name: "本串证书" }).click();
-  for (const name of ["奇楠沉香算盘珠手串", "琼南蜜韵沉香手串", "岭南雅韵沉香手串"]) {
-    const current = page.getByTestId("flow-current");
-    await current.getByRole("button", { name: new RegExp(name) }).click();
-    await expect(current.locator(".material-certificate-detail")).toContainText(name);
-    await expect(current.getByRole("button", { name: "查看防伪溯源", exact: true })).toHaveCount(0);
-    await page.getByRole("button", { name: "返回", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "我的手串", exact: true })).toBeVisible();
-  }
-});
+test("certificate details remain independent from provenance", async ({ page }) => { await page.getByRole("button", { name: "查看证书查询" }).click(); await expect(page.getByRole("heading", { name: "证书详情", exact: true })).toBeVisible(); await expect(page.getByRole("button", { name: "查看防伪溯源", exact: true })).toHaveCount(0); });
