@@ -1,5 +1,9 @@
 # Mobile Prototype Agent Guide
 
+## Selection entry wording (2026-09-21)
+
+- The first homepage selection entry is `资讯动态`, with subtitle `行业行情、展会信息`, superseding `手串收藏` / `海南沉香 · 温润随身`. Its background is `public/assets/home-selection/news-background-v1.png`: a text-free industry newspaper and exhibition scene with ivory paper, bamboo shadows, and clear left-side space for live text. Retain the existing card geometry. Clicking this card opens P-20 `news`, a left-image/right-text list reusing the homepage knowledge-row style, with industry/exhibition categories. Rows open P-21 `news-article`, reusing the knowledge article reading style. Both pages are anonymous, have contextual page PRDs, and preserve list/home scroll position on return. Four local sample articles are explicitly labeled `示例内容`; do not present fictional prices, event dates, locations, or sources as news. No search, tabs, registration, commerce, or social actions are added.
+
 ## NFC binding and bracelet list decision (2026-09-20)
 
 The prototype starts with the supplied `cx-2018-072` bracelet already bound when no saved binding state exists, so certificate and five-stage provenance are immediately reviewable. An explicitly saved empty list stays empty after deletion and refresh. The browser-only `查看已绑定示例` control adds/selects this sample without overwriting other bindings. This is preview fixture data, not real account authorization. NFC recognition of an unbound bracelet first asks whether to bind it. `确认绑定` continues immediately when the prototype authorization state is available, or opens the shared simulated WeChat authorization sheet and resumes binding after confirmation; `暂不绑定` preserves the existing binding state. Re-recognizing an already bound bracelet switches `current_bracelet_id` without duplicating the binding or count. The prototype persists the binding list and current bracelet in `localStorage`.
